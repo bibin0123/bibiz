@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+<title>Parser / Reverse Parser</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 16px;
+        margin: 0;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        background: #fafafa;
+        color: #000;
+        transition: 0.3s;
+    }
+
+    body.dark {
+        background: #111;
+        color: #fff;
+    }
+
+    h2 {
+        text-align: center;
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+
+    .theme-btn {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        background: #444;
+        color: white;
+        border: none;
+        margin-bottom: 15px;
+        font-size: 16px;
+    }
+
+    body.dark .theme-btn {
+        background: #777;
+    }
+
+    textarea {
+        width: 100%;
+        height: 140px;
+        padding: 14px;
+        font-size: 18px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        resize: vertical;
+        box-sizing: border-box;
+        background: #fff;
+        color: #000;
+    }
+
+    body.dark textarea {
+        background: #222;
+        color: white;
+        border: 1px solid #555;
+    }
+
+    button {
+        width: 100%;
+        padding: 16px;
+        margin-top: 14px;
+        font-size: 20px;
+        border: none;
+        border-radius: 10px;
+        background: #1976d2;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    button:active {
+        background: #0d47a1;
+        transform: scale(0.98);
+    }
+
+    .output {
+        margin-top: 20px;
+        padding: 16px;
+        background: white;
+        border-radius: 10px;
+        font-size: 18px;
+        min-height: 70px;
+        white-space: pre-wrap;
+        border: 1px solid #ddd;
+        box-shadow: 0px 2px 6px rgba(0,0,0,0.05);
+        color: #000;
+    }
+
+    body.dark .output {
+        background: #222;
+        color: #fff;
+        border: 1px solid #555;
+    }
+
+    @media (max-width: 480px) {
+        body { padding: 12px; }
+        h2 { font-size: 20px; }
+        textarea { font-size: 16px; height: 120px; }
+        button { font-size: 18px; padding: 14px; }
+        .output { font-size: 17px; padding: 14px; }
+    }
+</style>
+</head>
+
+<body>
+
+<h2>Parse / Reverse-Parse Tools</h2>
+
+<button id="themeToggle" class="theme-btn">🌙 Dark Mode</button>
+
+<textarea id="input" placeholder="Enter text here..."></textarea>
+
+<button onclick="processText()">Convert</button>
+
+<div class="output" id="output"></div>
+
+<script>
+const map = {
+    a:'z', b:'y', c:'x', d:'w', e:'v', f:'u', g:'t', h:'s', i:'r',
+    j:'q', k:'p', l:'o', m:'n', n:'m', o:'l', p:'k', q:'j', r:'i',
+    s:'h', t:'g', u:'f', v:'e', w:'d', x:'c', y:'b', z:'a',
+
+    '0':'1', '1':'0', '2':'9', '3':'8', '4':'7', '5':'6',
+    '6':'5', '7':'4', '8':'3', '9':'2',
+
+    '@':'#', '#':'@',
+    '&':'?', '?':'&',
+    '"':"'", "'":'"',
+    '*':'!', '!':'*',
+    '/':'+', '+':'/',
+    ':':'.', '.':':',
+    '$':'{', '{':'$',
+    '}':'\\', '\\':'}'
+};
+
+// uppercase rules
+for (let key in map) {
+    if (/[a-z]/.test(key)) {
+        map[key.toUpperCase()] = map[key].toUpperCase();
+    }
+}
+
+function convertChar(ch) {
+    return map[ch] ?? ch;
+}
+
+function processText() {
+    const text = document.getElementById("input").value;
+    let result = "";
+    for (let ch of text) result += convertChar(ch);
+    document.getElementById("output").innerText = result;
+}
+
+// Dark mode toggle
+const themeButton = document.getElementById("themeToggle");
+
+if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark");
+    themeButton.textContent = "☀️ Light Mode";
+}
+
+themeButton.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+
+    if (document.body.classList.contains("dark")) {
+        themeButton.textContent = "☀️ Light Mode";
+        localStorage.setItem("theme", "dark");
+    } else {
+        themeButton.textContent = "🌙 Dark Mode";
+        localStorage.setItem("theme", "light");
+    }
+});
+</script>
+
+</body>
+</html>
+
