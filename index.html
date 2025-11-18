@@ -56,6 +56,7 @@
         box-sizing: border-box;
         background: #fff;
         color: #000;
+        margin-bottom: 12px;
     }
 
     body.dark textarea {
@@ -64,65 +65,22 @@
         border: 1px solid #555;
     }
 
-    button {
-        width: 100%;
-        padding: 16px;
-        margin-top: 14px;
-        font-size: 20px;
-        border: none;
-        border-radius: 10px;
-        background: #1976d2;
-        color: white;
-        font-weight: bold;
-        cursor: pointer;
-        transition: 0.2s;
-    }
-
-    button:active {
-        background: #0d47a1;
-        transform: scale(0.98);
-    }
-
-    .output {
-        margin-top: 20px;
-        padding: 16px;
-        background: white;
-        border-radius: 10px;
-        font-size: 18px;
-        min-height: 70px;
-        white-space: pre-wrap;
-        border: 1px solid #ddd;
-        box-shadow: 0px 2px 6px rgba(0,0,0,0.05);
-        color: #000;
-    }
-
-    body.dark .output {
-        background: #222;
-        color: #fff;
-        border: 1px solid #555;
-    }
-
     @media (max-width: 480px) {
         body { padding: 12px; }
         h2 { font-size: 20px; }
         textarea { font-size: 16px; height: 120px; }
-        button { font-size: 18px; padding: 14px; }
-        .output { font-size: 17px; padding: 14px; }
     }
 </style>
 </head>
 
 <body>
 
-<h2>Parse / Reverse-Parsed Tools</h2>
+<h2>Parse / Reverse-Parse Tool</h2>
 
 <button id="themeToggle" class="theme-btn">🌙 Dark Mode</button>
 
-<textarea id="input" placeholder="Enter text here..."></textarea>
-
-<button onclick="processText()">Convert</button>
-
-<div class="output" id="output"></div>
+<textarea id="input" placeholder="Enter text..."></textarea>
+<textarea id="reverse" placeholder="Reverse parsed text..."></textarea>
 
 <script>
 const map = {
@@ -143,23 +101,35 @@ const map = {
     '}':'\\', '\\':'}'
 };
 
-// uppercase rules
+// Uppercase auto-map
 for (let key in map) {
     if (/[a-z]/.test(key)) {
         map[key.toUpperCase()] = map[key].toUpperCase();
     }
 }
 
+// Convert function
 function convertChar(ch) {
     return map[ch] ?? ch;
 }
 
-function processText() {
+// Forward typing
+document.getElementById("input").addEventListener("input", () => {
     const text = document.getElementById("input").value;
     let result = "";
+
     for (let ch of text) result += convertChar(ch);
-    document.getElementById("output").innerText = result;
-}
+    document.getElementById("reverse").value = result;
+});
+
+// Reverse typing
+document.getElementById("reverse").addEventListener("input", () => {
+    const text = document.getElementById("reverse").value;
+    let result = "";
+
+    for (let ch of text) result += convertChar(ch);
+    document.getElementById("input").value = result;
+});
 
 // Dark mode toggle
 const themeButton = document.getElementById("themeToggle");
@@ -184,4 +154,3 @@ themeButton.addEventListener("click", () => {
 
 </body>
 </html>
-
