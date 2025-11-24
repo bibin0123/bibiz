@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 
-<title>Parser / Reverse Parser</title>
+<title>Parser / Reverse Parser + World Clock</title>
 
 <style>
     body {
@@ -19,10 +19,7 @@
         transition: 0.3s;
     }
 
-    body.dark {
-        background: #111;
-        color: #fff;
-    }
+    body.dark { background: #111; color: #fff; }
 
     h2 {
         text-align: center;
@@ -41,55 +38,74 @@
         font-size: 16px;
     }
 
-    body.dark .theme-btn {
-        background: #777;
-    }
+    body.dark .theme-btn { background: #777; }
 
-    textarea {
+    textarea, input[type="text"] {
         width: 100%;
-        height: 140px;
         padding: 14px;
         font-size: 18px;
         border-radius: 10px;
         border: 1px solid #ccc;
-        resize: vertical;
-        box-sizing: border-box;
         background: #fff;
         color: #000;
         margin-bottom: 12px;
+        box-sizing: border-box;
     }
 
-    body.dark textarea {
+    body.dark textarea,
+    body.dark input[type="text"] {
         background: #222;
         color: white;
         border: 1px solid #555;
     }
 
+    #timeOutput {
+        background: white;
+        padding: 14px;
+        border-radius: 10px;
+        font-size: 18px;
+        border: 1px solid #ddd;
+        margin-bottom: 15px;
+        white-space: pre-wrap;
+    }
+
+    body.dark #timeOutput {
+        background: #222;
+        border: 1px solid #555;
+        color: white;
+    }
+
     @media (max-width: 480px) {
         body { padding: 12px; }
         h2 { font-size: 20px; }
-        textarea { font-size: 16px; height: 120px; }
+        textarea, input { font-size: 16px; }
     }
 </style>
 </head>
 
 <body>
 
-<h2>Parse / Reverse-Parse Tool</h2>
+<h2>Parse / Reverse-Parse + Time Converter</h2>
 
 <button id="themeToggle" class="theme-btn">🌙 Dark Mode</button>
 
+<!-- TIME INPUT -->
+<input type="text" id="timeInput" placeholder="Enter Indian time (e.g. 13:45)">
+<div id="timeOutput"></div>
+
+<!-- PARSER AND REVERSE PARSER -->
 <textarea id="input" placeholder="Enter text..."></textarea>
 <textarea id="reverse" placeholder="Reverse parsed text..."></textarea>
 
 <script>
+// ========== PARSER TABLE ==========
 const map = {
     a:'z', b:'y', c:'x', d:'w', e:'v', f:'u', g:'t', h:'s', i:'r',
     j:'q', k:'p', l:'o', m:'n', n:'m', o:'l', p:'k', q:'j', r:'i',
     s:'h', t:'g', u:'f', v:'e', w:'d', x:'c', y:'b', z:'a',
 
-    '0':'1', '1':'0', '2':'9', '3':'8', '4':'7', '5':'6',
-    '6':'5', '7':'4', '8':'3', '9':'2',
+    '0':'1', '1':'0', '2':'9', '3':'8', '4':'7',
+    '5':'6', '6':'5', '7':'4', '8':'3', '9':'2',
 
     '@':'#', '#':'@',
     '&':'?', '?':'&',
@@ -101,52 +117,85 @@ const map = {
     '}':'\\', '\\':'}'
 };
 
-// Uppercase auto-map
+// uppercase auto mapping
 for (let key in map) {
     if (/[a-z]/.test(key)) {
         map[key.toUpperCase()] = map[key].toUpperCase();
     }
 }
 
-// Convert function
-function convertChar(ch) {
-    return map[ch] ?? ch;
+function convertChar(ch) { return map[ch] ?? ch; }
+
+// Two-way live parsing
+input.addEventListener("input", () => {
+    let res = "";
+    for (let ch of input.value) res += convertChar(ch);
+    reverse.value = res;
+});
+
+reverse.addEventListener("input", () => {
+    let res = "";
+    for (let ch of reverse.value) res += convertChar(ch);
+    input.value = res;
+});
+
+// ========= TIME CONVERTER ==========
+const countries = [
+    { flag: "🇮🇳", name: "India",   tz: "Asia/Kolkata",      locale: "en-IN" },
+    { flag: "🇺🇸", name: "USA",     tz: "America/New_York",  locale: "en-US" },
+    { flag: "🇬🇧", name: "UK",      tz: "Europe/London",     locale: "en-GB" },
+    { flag: "🇩🇪", name: "Germany", tz: "Europe/Berlin",     locale: "de-DE" },
+    { flag: "🇦🇪", name: "UAE",     tz: "Asia/Dubai",        locale: "en-IN" },
+    { flag: "🇶🇦", name: "Qatar",   tz: "Asia/Qatar",        locale: "en-IN" },
+    { flag: "🇦🇺", name: "Australia", tz: "Australia/Sydney", locale: "en-AU" },
+    { flag: "🇨🇦", name: "Canada",  tz: "America/Toronto",   locale: "en-CA" },
+    { flag: "🇯🇵", name: "Japan",   tz: "Asia/Tokyo",        locale: "ja-JP" },
+    { flag: "🇰🇷", name: "Korea",   tz: "Asia/Seoul",        locale: "ko-KR" }
+];
+
+function format12(h, m, locale) {
+    let d = new Date();
+    d.setHours(h, m);
+    return d.toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" });
 }
 
-// Forward typing
-document.getElementById("input").addEventListener("input", () => {
-    const text = document.getElementById("input").value;
-    let result = "";
+document.getElementById("timeInput").addEventListener("input", () => {
+    const raw = timeInput.value.trim();
+    const out = timeOutput;
 
-    for (let ch of text) result += convertChar(ch);
-    document.getElementById("reverse").value = result;
+    if (!/^\d{1,2}:\d{2}$/.test(raw)) {
+        out.innerHTML = "⏱ Enter valid time like 13:45";
+        return;
+    }
+
+    let [hour, minute] = raw.split(":").map(Number);
+    let IST = new Date();
+    IST.setHours(hour, minute, 0, 0);
+
+    let html = "<b>Converted Time:</b><br>";
+
+    countries.forEach(c => {
+        let d = new Date(IST.toLocaleString(c.locale, { timeZone: c.tz }));
+        html += `${c.flag} ${c.name}: ${format12(d.getHours(), d.getMinutes(), c.locale)}<br>`;
+    });
+
+    out.innerHTML = html;
 });
 
-// Reverse typing
-document.getElementById("reverse").addEventListener("input", () => {
-    const text = document.getElementById("reverse").value;
-    let result = "";
-
-    for (let ch of text) result += convertChar(ch);
-    document.getElementById("input").value = result;
-});
-
-// Dark mode toggle
-const themeButton = document.getElementById("themeToggle");
-
+// ========== DARK MODE ==========
 if (localStorage.getItem("theme") === "dark") {
     document.body.classList.add("dark");
-    themeButton.textContent = "☀️ Light Mode";
+    themeToggle.textContent = "☀️ Light Mode";
 }
 
-themeButton.addEventListener("click", () => {
+themeToggle.addEventListener("click", () => {
     document.body.classList.toggle("dark");
 
     if (document.body.classList.contains("dark")) {
-        themeButton.textContent = "☀️ Light Mode";
+        themeToggle.textContent = "☀️ Light Mode";
         localStorage.setItem("theme", "dark");
     } else {
-        themeButton.textContent = "🌙 Dark Mode";
+        themeToggle.textContent = "🌙 Dark Mode";
         localStorage.setItem("theme", "light");
     }
 });
