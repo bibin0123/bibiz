@@ -90,15 +90,15 @@
 <button id="themeToggle" class="theme-btn">🌙 Dark Mode</button>
 
 <!-- TIME INPUT -->
-<input type="text" id="timeInput" placeholder="Enter Indian time (e.g. 13:45)">
+<input type="text" id="timeInput" placeholder="Enter Indian time (e.g. 14:30)">
 <div id="timeOutput"></div>
 
-<!-- PARSER AND REVERSE PARSER -->
+<!-- PARSE AND REVERSE PARSE -->
 <textarea id="input" placeholder="Enter text..."></textarea>
 <textarea id="reverse" placeholder="Reverse parsed text..."></textarea>
 
 <script>
-// ========== PARSER TABLE ==========
+// ================== PARSER MAP ==================
 const map = {
     a:'z', b:'y', c:'x', d:'w', e:'v', f:'u', g:'t', h:'s', i:'r',
     j:'q', k:'p', l:'o', m:'n', n:'m', o:'l', p:'k', q:'j', r:'i',
@@ -107,83 +107,79 @@ const map = {
     '0':'1', '1':'0', '2':'9', '3':'8', '4':'7',
     '5':'6', '6':'5', '7':'4', '8':'3', '9':'2',
 
-    '@':'#', '#':'@',
-    '&':'?', '?':'&',
-    '"':"'", "'":'"',
-    '*':'!', '!':'*',
-    '/':'+', '+':'/',
-    ':':'.', '.':':',
-    '$':'{', '{':'$',
-    '}':'\\', '\\':'}'
+    '@':'#', '#':'@', '&':'?', '?':'&',
+    '"':"'", "'":'"', '*':'!', '!':'*',
+    '/':'+', '+':'/', ':':'.', '.':':',
+    '$':'{', '{':'$', '}':'\\', '\\':'}'
 };
 
-// uppercase auto mapping
-for (let key in map) {
-    if (/[a-z]/.test(key)) {
-        map[key.toUpperCase()] = map[key].toUpperCase();
-    }
+// Auto uppercase
+for (let key in map)
+    if (/[a-z]/.test(key)) map[key.toUpperCase()] = map[key].toUpperCase();
+
+function convertChar(ch){ return map[ch] ?? ch; }
+
+// Two-way parsing
+input.addEventListener("input", () => {
+    reverse.value = [...input.value].map(convertChar).join("");
+});
+reverse.addEventListener("input", () => {
+    input.value = [...reverse.value].map(convertChar).join("");
+});
+
+// =============== UNIVERSAL TIME CONVERTER ===============
+// Works on all browsers (IST → UTC → ANY COUNTRY)
+function convertISTToTZ(hour, minute, tz) {
+    // IST → UTC (IST = UTC+5:30)
+    let utc = Date.UTC(2020, 0, 1, hour - 5, minute - 30);
+
+    // Convert UTC → Target TZ
+    return new Date(utc).toLocaleTimeString("en-US", {
+        timeZone: tz,
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+    });
 }
 
-function convertChar(ch) { return map[ch] ?? ch; }
-
-// Two-way live parsing
-input.addEventListener("input", () => {
-    let res = "";
-    for (let ch of input.value) res += convertChar(ch);
-    reverse.value = res;
-});
-
-reverse.addEventListener("input", () => {
-    let res = "";
-    for (let ch of reverse.value) res += convertChar(ch);
-    input.value = res;
-});
-
-// ========= TIME CONVERTER ==========
 const countries = [
-    { flag: "🇮🇳", name: "India",     tz: "Asia/Kolkata",     locale: "en-IN" },
-    { flag: "🇺🇸", name: "USA",       tz: "America/New_York", locale: "en-US" },
-    { flag: "🇬🇧", name: "UK",        tz: "Europe/London",    locale: "en-GB" },
-    { flag: "🇩🇪", name: "Germany",   tz: "Europe/Berlin",    locale: "de-DE" },
-    { flag: "🇦🇪", name: "UAE",       tz: "Asia/Dubai",       locale: "en-IN" },
-    { flag: "🇶🇦", name: "Qatar",     tz: "Asia/Riyadh",      locale: "en-IN" },  // Qatar fix
-    { flag: "🇦🇺", name: "Australia", tz: "Australia/Sydney", locale: "en-AU" },
-    { flag: "🇨🇦", name: "Canada",    tz: "America/Toronto",  locale: "en-CA" },
-    { flag: "🇯🇵", name: "Japan",     tz: "Asia/Tokyo",       locale: "ja-JP" },
-    { flag: "🇰🇷", name: "Korea",     tz: "Asia/Seoul",       locale: "ko-KR" }
+    { flag: "🇮🇳", name: "India",     tz: "Asia/Kolkata" },
+    { flag: "🇺🇸", name: "USA",       tz: "America/New_York" },
+    { flag: "🇬🇧", name: "UK",        tz: "Europe/London" },
+    { flag: "🇩🇪", name: "Germany",   tz: "Europe/Berlin" },
+    { flag: "🇦🇪", name: "UAE",       tz: "Asia/Dubai" },
+    { flag: "🇶🇦", name: "Qatar",     tz: "Asia/Qatar" },
+    { flag: "🇦🇺", name: "Australia", tz: "Australia/Sydney" },
+    { flag: "🇨🇦", name: "Canada",    tz: "America/Toronto" },
+    { flag: "🇯🇵", name: "Japan",     tz: "Asia/Tokyo" },
+    { flag: "🇰🇷", name: "Korea",     tz: "Asia/Seoul" }
 ];
 
+timeInput.addEventListener("input", () => {
+    let raw = timeInput.value.trim().replace(/\s+/g, "");
 
-function format12(h, m, locale) {
-    let d = new Date();
-    d.setHours(h, m);
-    return d.toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" });
-}
-
-document.getElementById("timeInput").addEventListener("input", () => {
-    const raw = timeInput.value.trim();
-    const out = timeOutput;
-
-    if (!/^\d{1,2}:\d{2}$/.test(raw)) {
-        out.innerHTML = "⏱ Enter valid time like 13:45";
+    if (!/^\d{1,2}:\d{1,2}$/.test(raw)) {
+        timeOutput.innerHTML = "⏱ Enter time like 14:30";
         return;
     }
 
     let [hour, minute] = raw.split(":").map(Number);
-    let IST = new Date();
-    IST.setHours(hour, minute, 0, 0);
+
+    if (hour > 23 || minute > 59) {
+        timeOutput.innerHTML = "⛔ Invalid time";
+        return;
+    }
 
     let html = "<b>Converted Time:</b><br>";
 
     countries.forEach(c => {
-        let d = new Date(IST.toLocaleString(c.locale, { timeZone: c.tz }));
-        html += `${c.flag} ${c.name}: ${format12(d.getHours(), d.getMinutes(), c.locale)}<br>`;
+        html += `${c.flag} ${c.name}: ${convertISTToTZ(hour, minute, c.tz)}<br>`;
     });
 
-    out.innerHTML = html;
+    timeOutput.innerHTML = html;
 });
 
-// ========== DARK MODE ==========
+// ================= DARK MODE ==================
 if (localStorage.getItem("theme") === "dark") {
     document.body.classList.add("dark");
     themeToggle.textContent = "☀️ Light Mode";
