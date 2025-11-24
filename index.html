@@ -141,17 +141,18 @@ reverse.addEventListener("input", () => {
 
 // ========= TIME CONVERTER ==========
 const countries = [
-    { flag: "🇮🇳", name: "India",   tz: "Asia/Kolkata",      locale: "en-IN" },
-    { flag: "🇺🇸", name: "USA",     tz: "America/New_York",  locale: "en-US" },
-    { flag: "🇬🇧", name: "UK",      tz: "Europe/London",     locale: "en-GB" },
-    { flag: "🇩🇪", name: "Germany", tz: "Europe/Berlin",     locale: "de-DE" },
-    { flag: "🇦🇪", name: "UAE",     tz: "Asia/Dubai",        locale: "en-IN" },
-    { flag: "🇶🇦", name: "Qatar",   tz: "Asia/Qatar",        locale: "en-IN" },
+    { flag: "🇮🇳", name: "India",     tz: "Asia/Kolkata",     locale: "en-IN" },
+    { flag: "🇺🇸", name: "USA",       tz: "America/New_York", locale: "en-US" },
+    { flag: "🇬🇧", name: "UK",        tz: "Europe/London",    locale: "en-GB" },
+    { flag: "🇩🇪", name: "Germany",   tz: "Europe/Berlin",    locale: "de-DE" },
+    { flag: "🇦🇪", name: "UAE",       tz: "Asia/Dubai",       locale: "en-IN" },
+    { flag: "🇶🇦", name: "Qatar",     tz: "Asia/Riyadh",      locale: "en-IN" },  // Qatar fix
     { flag: "🇦🇺", name: "Australia", tz: "Australia/Sydney", locale: "en-AU" },
-    { flag: "🇨🇦", name: "Canada",  tz: "America/Toronto",   locale: "en-CA" },
-    { flag: "🇯🇵", name: "Japan",   tz: "Asia/Tokyo",        locale: "ja-JP" },
-    { flag: "🇰🇷", name: "Korea",   tz: "Asia/Seoul",        locale: "ko-KR" }
+    { flag: "🇨🇦", name: "Canada",    tz: "America/Toronto",  locale: "en-CA" },
+    { flag: "🇯🇵", name: "Japan",     tz: "Asia/Tokyo",       locale: "ja-JP" },
+    { flag: "🇰🇷", name: "Korea",     tz: "Asia/Seoul",       locale: "ko-KR" }
 ];
+
 
 function format12(h, m, locale) {
     let d = new Date();
