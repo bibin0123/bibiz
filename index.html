@@ -92,6 +92,10 @@
 <!-- TIME INPUT -->
 <input type="text" id="timeInput" placeholder="Enter Indian time (e.g. 14:30)">
 <div id="timeOutput"></div>
+<input type="number" id="baseNumber" placeholder="Enter number (e.g. 100)">
+<input type="number" id="percentValue" placeholder="Enter percent (e.g. 10)">
+<div id="percentOutput"></div>
+
 
 <!-- PARSE AND REVERSE PARSE -->
 <textarea id="input" placeholder="Enter text..."></textarea>
@@ -215,6 +219,25 @@ themeToggle.addEventListener("click", () => {
         localStorage.setItem("theme", "light");
     }
 });
+
+function calculatePercent() {
+    let num = parseFloat(document.getElementById("baseNumber").value);
+    let per = parseFloat(document.getElementById("percentValue").value);
+    const out = document.getElementById("percentOutput");
+
+    if (isNaN(num) || isNaN(per)) {
+        out.innerHTML = "Enter valid number and percentage";
+        return;
+    }
+
+    let result = (num * per) / 100;
+
+    out.innerHTML = `<b>Result:</b> ${result}`;
+}
+
+document.getElementById("baseNumber").addEventListener("input", calculatePercent);
+document.getElementById("percentValue").addEventListener("input", calculatePercent);
+
 </script>
 
 </body>
