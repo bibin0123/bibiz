@@ -96,6 +96,26 @@
 <input type="number" id="percentValue" placeholder="Enter percent (e.g. 10)">
 <div id="percentOutput"></div>
 
+<!-- Number in words-->
+
+<input type="number" id="numToWord" placeholder="Enter number (e.g. 100)">
+<div id="numWordsOutput"></div>
+
+<!--length converstion -->
+<input type="number" id="lenValue" placeholder="Enter value">
+<select id="lenUnit">
+    <option value="inch">Inch</option>
+    <option value="cm">Centimeter</option>
+    <option value="m">Meter</option>
+    <option value="mm">Millimeter</option>
+    <option value="ft">Feet</option>
+    <option value="yd">Yard</option>
+</select>
+
+<div id="lenOutput"></div>
+
+
+
 
 <!-- PARSE AND REVERSE PARSE -->
 <textarea id="input" placeholder="Enter text..."></textarea>
@@ -200,6 +220,92 @@ timeInput.addEventListener("input", () => {
 
     timeOutput.innerHTML = html;
 });
+
+// NUMBER TO WORDS CONVERTER
+function numberToWords(num) {
+    if (num === 0) return "zero";
+
+    const ones = ["", "one","two","three","four","five","six","seven","eight","nine"];
+    const teens = ["ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
+    const tens = ["", "", "twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"];
+
+    function convert(n) {
+        if (n < 10) return ones[n];
+        if (n < 20) return teens[n - 10];
+        if (n < 100) return tens[Math.floor(n/10)] + (n%10!==0 ? " " + ones[n%10] : "");
+        if (n < 1000) return ones[Math.floor(n/100)] + " hundred" + (n%100!==0 ? " " + convert(n%100) : "");
+        if (n < 1000000) return convert(Math.floor(n/1000)) + " thousand" + (n%1000!==0 ? " " + convert(n%1000) : "");
+        if (n < 1000000000) return convert(Math.floor(n/1000000)) + " million" + (n%1000000!==0 ? " " + convert(n%1000000) : "");
+        return "number too large";
+    }
+
+    return convert(num);
+}
+
+// Live update when typing number
+document.getElementById("numToWord").addEventListener("input", () => {
+    let val = document.getElementById("numToWord").value;
+    let out = document.getElementById("numWordsOutput");
+
+    if (val === "" || isNaN(val)) {
+        out.innerHTML = "";
+        return;
+    }
+
+    out.innerHTML = `<b>In Words:</b> ${numberToWords(parseInt(val))}`;
+});
+
+// BI-DIRECTIONAL LENGTH CONVERTER
+
+const lengthFactors = {
+    inch: 1,
+    cm: 0.3937007874,
+    m: 39.37007874,
+    mm: 0.03937007874,
+    ft: 12,
+    yd: 36
+};
+
+function convertFromInch(inch) {
+    return {
+        inch: inch,
+        cm: inch * 2.54,
+        m: inch * 0.0254,
+        mm: inch * 25.4,
+        ft: inch / 12,
+        yd: inch / 36
+    };
+}
+
+function updateLength() {
+    let val = parseFloat(document.getElementById("lenValue").value);
+    let unit = document.getElementById("lenUnit").value;
+    const out = document.getElementById("lenOutput");
+
+    if (isNaN(val)) {
+        out.innerHTML = "";
+        return;
+    }
+
+    // Convert any unit → inches
+    let inchValue = val * lengthFactors[unit];
+
+    // Convert inch → all units
+    let res = convertFromInch(inchValue);
+
+    out.innerHTML = `
+        <b>Converted:</b><br>
+        Inch: ${res.inch.toFixed(4)}<br>
+        CM: ${res.cm.toFixed(4)}<br>
+        Meter: ${res.m.toFixed(6)}<br>
+        MM: ${res.mm.toFixed(2)}<br>
+        Feet: ${res.ft.toFixed(4)}<br>
+        Yard: ${res.yd.toFixed(6)}
+    `;
+}
+
+document.getElementById("lenValue").addEventListener("input", updateLength);
+document.getElementById("lenUnit").addEventListener("change", updateLength);
 
 
 // ================= DARK MODE ==================
