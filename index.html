@@ -80,6 +80,21 @@
         h2 { font-size: 20px; }
         textarea, input { font-size: 16px; }
     }
+    .section {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #ccc;
+    }
+
+body.dark .section {
+    border-bottom: 1px solid #444;
+   }
+
+.section h3 {
+    margin-bottom: 10px;
+    font-size: 20px;
+  }
+
 </style>
 </head>
 
@@ -90,19 +105,39 @@
 <button id="themeToggle" class="theme-btn">🌙 Dark Mode</button>
 
 <!-- TIME INPUT -->
-<input type="text" id="timeInput" placeholder="Enter Indian time (e.g. 14:30)">
-<div id="timeOutput"></div>
+<!-- <input type="text" id="timeInput" placeholder="Enter Indian time (e.g. 14:30)">
+<div id="timeOutput"></div> -->
+<div class="section">
+    <h3>Time Converter</h3>
+    <input type="text" id="timeInput" placeholder="Enter Indian time (e.g. 14:30)">
+    <div id="timeOutput"></div>
+</div>
+
+<!--Percentage check -->
+
+<div class="section">
+    <h3>Percentage Calculator</h3>
+    <input type="number" id="baseNumber" placeholder="Enter number">
+    <input type="number" id="percentValue" placeholder="Enter %">
+    <div id="percentOutput"></div>
+</div>
+
+<!-- 
 <input type="number" id="baseNumber" placeholder="Enter number (e.g. 100)">
 <input type="number" id="percentValue" placeholder="Enter percent (e.g. 10)">
-<div id="percentOutput"></div>
+<div id="percentOutput"></div> -->
 
 <!-- Number in words-->
 
-<input type="number" id="numToWord" placeholder="Enter number (e.g. 100)">
-<div id="numWordsOutput"></div>
+<div class="section">
+    <h3>Number to Words</h3>
+    <input type="number" id="numToWord" placeholder="Enter number(e.g. 100)">
+    <div id="numWordsOutput"></div>
+</div>
+
 
 <!--length converstion -->
-<input type="number" id="lenValue" placeholder="Enter value">
+<!-- <input type="number" id="lenValue" placeholder="Enter value">
 <select id="lenUnit">
     <option value="inch">Inch</option>
     <option value="cm">Centimeter</option>
@@ -112,14 +147,34 @@
     <option value="yd">Yard</option>
 </select>
 
-<div id="lenOutput"></div>
+<div id="lenOutput"></div> -->
+<div class="section">
+    <h3>Length Converter (Bi-directional)</h3>
+    <input type="number" id="lenValue" placeholder="Enter value">
+    <select id="lenUnit">
+        <option value="inch">Inch</option>
+        <option value="cm">Centimeter</option>
+        <option value="m">Meter</option>
+        <option value="mm">Millimeter</option>
+        <option value="ft">Feet</option>
+        <option value="yd">Yard</option>
+    </select>
+    <div id="lenOutput"></div>
+</div>
+
 
 
 
 
 <!-- PARSE AND REVERSE PARSE -->
-<textarea id="input" placeholder="Enter text..."></textarea>
-<textarea id="reverse" placeholder="Reverse parsed text..."></textarea>
+ <div class="section">
+    <h3>Parser & Reverse Parser</h3>
+    <textarea id="input" placeholder="Enter text..."></textarea>
+    <textarea id="reverse" placeholder="Reverse parsed text..."></textarea>
+</div>
+
+<!-- <textarea id="input" placeholder="Enter text..."></textarea>
+<textarea id="reverse" placeholder="Reverse parsed text..."></textarea> -->
 
 <script>
 // ================== PARSER MAP ==================
