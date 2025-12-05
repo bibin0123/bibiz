@@ -95,6 +95,23 @@ body.dark .section {
     font-size: 20px;
   }
 
+  .catRow {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.catRow input, .catRow select {
+    flex: 1;
+}
+
+.bar {
+    height: 20px;
+    border-radius: 5px;
+    margin: 4px 0;
+}
+
+
 </style>
 </head>
 
@@ -136,18 +153,10 @@ body.dark .section {
 </div>
 
 
-<!--length converstion -->
-<!-- <input type="number" id="lenValue" placeholder="Enter value">
-<select id="lenUnit">
-    <option value="inch">Inch</option>
-    <option value="cm">Centimeter</option>
-    <option value="m">Meter</option>
-    <option value="mm">Millimeter</option>
-    <option value="ft">Feet</option>
-    <option value="yd">Yard</option>
-</select>
 
-<div id="lenOutput"></div> -->
+
+<!--length converstion -->
+
 <div class="section">
     <h3>Length Converter (Bi-directional)</h3>
     <input type="number" id="lenValue" placeholder="Enter value">
@@ -162,6 +171,19 @@ body.dark .section {
     <div id="lenOutput"></div>
 </div>
 
+<!--Salary splitter-->
+
+<div class="section">
+    <h3>Salary Splitter</h3>
+
+    <input type="number" id="totalSalary" placeholder="Enter total salary">
+
+    <div id="categoryList"></div>
+
+    <button id="addCategory">+ Add Category</button>
+
+    <div id="salarySplitOutput"></div>
+</div>
 
 
 
@@ -398,6 +420,137 @@ function calculatePercent() {
 
 document.getElementById("baseNumber").addEventListener("input", calculatePercent);
 document.getElementById("percentValue").addEventListener("input", calculatePercent);
+
+// ================= SALARY SPLITTER (FINAL VERSION) =================
+
+// Create a row dynamically
+function createCategoryRow(name = "", type = "percent", value = "") {
+    const row = document.createElement("div");
+    row.className = "catRow";
+
+    row.innerHTML = `
+        <input type="text" class="catName" placeholder="Category" value="${name}">
+        <select class="catType">
+            <option value="percent" ${type === "percent" ? "selected" : ""}>%</option>
+            <option value="fixed" ${type === "fixed" ? "selected" : ""}>₹</option>
+        </select>
+        <input type="number" class="catValue" placeholder="Value" value="${value}">
+    `;
+    return row;
+}
+
+// Add default row if empty
+document.getElementById("categoryList").appendChild(createCategoryRow());
+
+// Add new row button
+document.getElementById("addCategory").addEventListener("click", () => {
+    document.getElementById("categoryList").appendChild(createCategoryRow());
+    saveCategories();
+});
+
+// Salary calculation and color bars
+function calculateSalarySplit() {
+    const total = parseFloat(document.getElementById("totalSalary").value);
+    const out = document.getElementById("salarySplitOutput");
+
+    if (isNaN(total) || total <= 0) {
+        out.innerHTML = "";
+        return;
+    }
+
+    const names = document.querySelectorAll(".catName");
+    const types = document.querySelectorAll(".catType");
+    const values = document.querySelectorAll(".catValue");
+
+    let used = 0;
+    let html = "";
+    let bars = "";
+
+    for (let i = 0; i < names.length; i++) {
+        let name = names[i].value.trim();
+        let type = types[i].value;
+        let val = parseFloat(values[i].value);
+
+        if (name !== "" && !isNaN(val)) {
+            let amount = type === "percent" ? (total * val) / 100 : val;
+            used += amount;
+
+            let pct = (amount / total) * 100;
+            let color = `hsl(${(i * 45) % 360}, 80%, 60%)`;
+
+            bars += `
+                <div class="bar" style="width:${pct}%; background:${color}></div>
+                ${name}: ₹${amount.toFixed(2)} (${type === "percent" ? val + "%" : "fixed"})<br>
+            `;
+        }
+    }
+
+    let remaining = total - used;
+    let remPct = (remaining / total) * 100;
+
+    bars += `
+        <div class="bar" style="width:${remPct}%; background:hsl(200,80%,60%)"></div>
+        <b>Remaining:</b> ₹${remaining.toFixed(2)}
+    `;
+
+    out.innerHTML = bars;
+}
+
+// Auto calculate + save
+document.getElementById("totalSalary").addEventListener("input", () => {
+    calculateSalarySplit();
+    saveCategories();
+});
+
+document.getElementById("categoryList").addEventListener("input", () => {
+    calculateSalarySplit();
+    saveCategories();
+});
+
+// ================= SAVE / LOAD SYSTEM =================
+function saveCategories() {
+    let total = document.getElementById("totalSalary").value;
+
+    let names = document.querySelectorAll(".catName");
+    let types = document.querySelectorAll(".catType");
+    let values = document.querySelectorAll(".catValue");
+
+    let data = {
+        totalSalary: total,
+        categories: []
+    };
+
+    for (let i = 0; i < names.length; i++) {
+        data.categories.push({
+            name: names[i].value,
+            type: types[i].value,
+            value: values[i].value
+        });
+    }
+
+    localStorage.setItem("salaryData", JSON.stringify(data));
+}
+
+function loadCategories() {
+    const saved = localStorage.getItem("salaryData");
+    if (!saved) return;
+
+    const data = JSON.parse(saved);
+
+    document.getElementById("totalSalary").value = data.totalSalary;
+
+    document.getElementById("categoryList").innerHTML = "";
+
+    data.categories.forEach(c => {
+        document.getElementById("categoryList")
+        .appendChild(createCategoryRow(c.name, c.type, c.value));
+    });
+
+    calculateSalarySplit();
+}
+
+loadCategories();
+
 
 </script>
 
