@@ -111,6 +111,43 @@ body.dark .section {
     margin: 4px 0;
 }
 
+.deleteCatBtn {
+    background:#d9534f;
+    color:white;
+    border:none;
+    padding:8px 12px;
+    border-radius:6px;
+}
+
+body.dark .deleteCatBtn {
+    background:#b33a3a;
+}
+
+.taskItem {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:8px;
+    border-radius:6px;
+    margin-bottom:5px;
+    background:#eee;
+}
+
+body.dark .taskItem {
+    background:#222;
+}
+
+.taskItem span {
+    flex:1;
+}
+
+.taskDone {
+    text-decoration: line-through;
+    opacity:0.6;
+}
+
+
+
 
 </style>
 </head>
@@ -122,8 +159,7 @@ body.dark .section {
 <button id="themeToggle" class="theme-btn">🌙 Dark Mode</button>
 
 <!-- TIME INPUT -->
-<!-- <input type="text" id="timeInput" placeholder="Enter Indian time (e.g. 14:30)">
-<div id="timeOutput"></div> -->
+
 <div class="section">
     <h3>Time Converter</h3>
     <input type="text" id="timeInput" placeholder="Enter Indian time (e.g. 14:30)">
@@ -139,10 +175,6 @@ body.dark .section {
     <div id="percentOutput"></div>
 </div>
 
-<!-- 
-<input type="number" id="baseNumber" placeholder="Enter number (e.g. 100)">
-<input type="number" id="percentValue" placeholder="Enter percent (e.g. 10)">
-<div id="percentOutput"></div> -->
 
 <!-- Number in words-->
 
@@ -173,6 +205,8 @@ body.dark .section {
 
 <!--Salary splitter-->
 
+
+
 <div class="section">
     <h3>Salary Splitter</h3>
 
@@ -181,9 +215,40 @@ body.dark .section {
     <div id="categoryList"></div>
 
     <button id="addCategory">+ Add Category</button>
+    <button id="resetSalary" style="margin-top:10px; background:#d9534f; color:white;">Reset All</button>
 
     <div id="salarySplitOutput"></div>
 </div>
+
+
+
+
+<!--Notes-->
+
+<div class="section">
+    <h3>Notes</h3>
+    <textarea id="notesBox" placeholder="Write your notes here..." style="height:120px;"></textarea>
+</div>
+
+<!--Daily Tasker-->
+
+<div class="section">
+    <h3>Daily Tasks</h3>
+
+    <div style="display:flex; gap:10px; margin-bottom:10px;">
+        <input type="text" id="taskInput" placeholder="Add new task..." style="flex:1;">
+        <button id="addTaskBtn">Add</button>
+    </div>
+
+    <ul id="taskList" style="list-style:none; padding-left:0;"></ul>
+</div>
+
+<div class="section">
+    <h3>Live Cricket Score</h3>
+    <button id="refreshScore">Refresh Score</button>
+    <div id="cricketOutput" style="margin-top:10px;"></div>
+</div>
+
 
 
 
@@ -507,10 +572,116 @@ document.getElementById("categoryList").addEventListener("input", () => {
     saveCategories();
 });
 
-// ================= SAVE / LOAD SYSTEM =================
+
+
+// ================= SALARY SPLITTER WITH DELETE + RESET =================
+
+// Create a row dynamically (with delete button)
+function createCategoryRow(name = "", type = "percent", value = "") {
+    const row = document.createElement("div");
+    row.className = "catRow";
+
+    row.innerHTML = `
+        <input type="text" class="catName" placeholder="Category" value="${name}">
+        <select class="catType">
+            <option value="percent" ${type === "percent" ? "selected" : ""}>%</option>
+            <option value="fixed" ${type === "fixed" ? "selected" : ""}>₹</option>
+        </select>
+        <input type="number" class="catValue" placeholder="Value" value="${value}">
+        <button class="deleteCatBtn">X</button>
+    `;
+
+    // Delete row handler
+    row.querySelector(".deleteCatBtn").addEventListener("click", () => {
+        row.remove();
+        saveCategories();
+        calculateSalarySplit();
+    });
+
+    return row;
+}
+
+// Add default category row on start
+document.getElementById("categoryList").appendChild(createCategoryRow());
+
+// Add new row button
+document.getElementById("addCategory").addEventListener("click", () => {
+    document.getElementById("categoryList").appendChild(createCategoryRow());
+    saveCategories();
+});
+
+// Reset salary system completely
+document.getElementById("resetSalary").addEventListener("click", () => {
+    localStorage.removeItem("salaryData");
+    document.getElementById("totalSalary").value = "";
+    document.getElementById("categoryList").innerHTML = "";
+    document.getElementById("categoryList").appendChild(createCategoryRow());
+    document.getElementById("salarySplitOutput").innerHTML = "";
+});
+
+// Salary calculation logic
+function calculateSalarySplit() {
+    const total = parseFloat(document.getElementById("totalSalary").value);
+    const out = document.getElementById("salarySplitOutput");
+
+    if (isNaN(total) || total <= 0) {
+        out.innerHTML = "";
+        return;
+    }
+
+    const names = document.querySelectorAll(".catName");
+    const types = document.querySelectorAll(".catType");
+    const values = document.querySelectorAll(".catValue");
+
+    let used = 0;
+    let bars = "";
+
+    for (let i = 0; i < names.length; i++) {
+        let name = names[i].value.trim();
+        let type = types[i].value;
+        let val = parseFloat(values[i].value);
+
+        if (name !== "" && !isNaN(val)) {
+            let amount = type === "percent" ? (total * val) / 100 : val;
+            used += amount;
+
+            let pct = (amount / total) * 100;
+            let color = `hsl(${(i * 45) % 360}, 80%, 60%)`;
+
+            bars += `
+                <div class="bar" style="width:${pct}%; background:${color}"></div>
+                <b>${name}</b>: ₹${amount.toFixed(2)} 
+                ${type === "percent" ? `(${val}%)` : `(₹${val} fixed)`}<br>
+            `;
+        }
+    }
+
+    let remaining = total - used;
+    let remPct = (remaining / total) * 100;
+
+    bars += `
+        <br>
+        <div class="bar" style="width:${remPct}%; background:hsl(200,80%,60%)"></div>
+        <b>Remaining Salary:</b> ₹${remaining.toFixed(2)}
+    `;
+
+    out.innerHTML = bars;
+}
+
+// Auto calculation + save
+document.getElementById("totalSalary").addEventListener("input", () => {
+    calculateSalarySplit();
+    saveCategories();
+});
+
+document.getElementById("categoryList").addEventListener("input", () => {
+    calculateSalarySplit();
+    saveCategories();
+});
+
+// Save categories to localStorage
 function saveCategories() {
     let total = document.getElementById("totalSalary").value;
-
     let names = document.querySelectorAll(".catName");
     let types = document.querySelectorAll(".catType");
     let values = document.querySelectorAll(".catValue");
@@ -531,6 +702,7 @@ function saveCategories() {
     localStorage.setItem("salaryData", JSON.stringify(data));
 }
 
+// Load saved items on startup
 function loadCategories() {
     const saved = localStorage.getItem("salaryData");
     if (!saved) return;
@@ -538,7 +710,6 @@ function loadCategories() {
     const data = JSON.parse(saved);
 
     document.getElementById("totalSalary").value = data.totalSalary;
-
     document.getElementById("categoryList").innerHTML = "";
 
     data.categories.forEach(c => {
@@ -550,6 +721,140 @@ function loadCategories() {
 }
 
 loadCategories();
+
+
+
+
+
+// ====================== NOTES SAVE & LOAD ======================
+
+// Auto-load saved notes
+function loadNotes() {
+    const savedNotes = localStorage.getItem("myNotes");
+    if (savedNotes) {
+        document.getElementById("notesBox").value = savedNotes;
+    }
+}
+
+// Auto-save notes while typing
+document.getElementById("notesBox").addEventListener("input", () => {
+    localStorage.setItem("myNotes", document.getElementById("notesBox").value);
+});
+
+// Run on startup
+loadNotes();
+
+// ===================== DAILY TASK SYSTEM =====================
+
+// Load existing tasks
+function loadTasks() {
+    const saved = localStorage.getItem("dailyTasks");
+    if (!saved) return;
+
+    const tasks = JSON.parse(saved);
+    tasks.forEach(t => addTaskToUI(t.text, t.done));
+}
+
+// Save tasks
+function saveTasks() {
+    const taskElements = document.querySelectorAll(".taskItem");
+    let tasks = [];
+
+    taskElements.forEach(li => {
+        tasks.push({
+            text: li.querySelector("span").textContent,
+            done: li.classList.contains("taskDone")
+        });
+    });
+
+    localStorage.setItem("dailyTasks", JSON.stringify(tasks));
+}
+
+// Add a task to the UI
+function addTaskToUI(text, done = false) {
+    const li = document.createElement("li");
+    li.className = "taskItem";
+    if (done) li.classList.add("taskDone");
+
+    li.innerHTML = `
+        <span>${text}</span>
+        <button class="toggleBtn">✓</button>
+        <button class="deleteBtn">✗</button>
+    `;
+
+    // Toggle complete
+    li.querySelector(".toggleBtn").addEventListener("click", () => {
+        li.classList.toggle("taskDone");
+        saveTasks();
+    });
+
+    // Delete task
+    li.querySelector(".deleteBtn").addEventListener("click", () => {
+        li.remove();
+        saveTasks();
+    });
+
+    document.getElementById("taskList").appendChild(li);
+    saveTasks();
+}
+
+// Add button click
+document.getElementById("addTaskBtn").addEventListener("click", () => {
+    const text = taskInput.value.trim();
+    if (text === "") return;
+
+    addTaskToUI(text);
+    taskInput.value = "";
+});
+
+// Enter key to add task
+document.getElementById("taskInput").addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+        addTaskBtn.click();
+    }
+});
+
+// Load tasks on startup
+loadTasks();
+
+// ==================== LIVE CRICKET SCORE (ESPN API) ====================
+async function loadCricketScore() {
+    const out = document.getElementById("cricketOutput");
+    out.innerHTML = "Loading...";
+
+    try {
+        const res = await fetch("https://site.web.api.espn.com/apis/site/v2/sports/cricket/scoreboard");
+        const data = await res.json();
+
+        if (!data.events || data.events.length === 0) {
+            out.innerHTML = "No live matches right now.";
+            return;
+        }
+
+        let match = data.events[0].competitions[0];
+
+        let t1 = match.competitors[0];
+        let t2 = match.competitors[1];
+
+        out.innerHTML = `
+            <b>${t1.team.displayName} vs ${t2.team.displayName}</b><br><br>
+            ${t1.team.abbreviation}: ${t1.score ?? "–"}<br>
+            ${t2.team.abbreviation}: ${t2.score ?? "–"}<br><br>
+            <b>Status:</b> ${match.status.type.detail}
+        `;
+    } catch (err) {
+        out.innerHTML = "❌ Unable to load score.";
+    }
+}
+
+// Manual refresh button
+document.getElementById("refreshScore").addEventListener("click", loadCricketScore);
+
+// Auto load on page start
+loadCricketScore();
+
+
+
 
 
 </script>
