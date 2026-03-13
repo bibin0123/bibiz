@@ -1,441 +1,479 @@
+flow chart
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 
-<title>Parser / Reverse Parser + World Clock</title>
+    <title>Parser / Reverse Parser + World Clock</title>
 
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        padding: 16px;
-        margin: 0;
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
-        background: #fafafa;
-        color: #000;
-        transition: 0.3s;
-    }
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 16px;
+            margin: 0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            background: #fafafa;
+            color: #000;
+            transition: 0.3s;
+        }
 
-    body.dark { background: #111; color: #fff; }
+        body.dark {
+            background: #111;
+            color: #fff;
+        }
 
-    h2 {
-        text-align: center;
-        font-size: 24px;
-        margin-bottom: 15px;
-    }
+        h2 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
 
-    .theme-btn {
-        width: 100%;
-        padding: 12px;
-        border-radius: 8px;
-        background: #444;
-        color: white;
-        border: none;
-        margin-bottom: 15px;
-        font-size: 16px;
-    }
+        .theme-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            background: #444;
+            color: white;
+            border: none;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
 
-    body.dark .theme-btn { background: #777; }
+        body.dark .theme-btn {
+            background: #777;
+        }
 
-    textarea, input[type="text"] {
-        width: 100%;
-        padding: 14px;
-        font-size: 18px;
-        border-radius: 10px;
-        border: 1px solid #ccc;
-        background: #fff;
-        color: #000;
-        margin-bottom: 12px;
-        box-sizing: border-box;
-    }
+        textarea,
+        input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            font-size: 18px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            background: #fff;
+            color: #000;
+            margin-bottom: 12px;
+            box-sizing: border-box;
+        }
 
-    body.dark textarea,
-    body.dark input[type="text"] {
-        background: #222;
-        color: white;
-        border: 1px solid #555;
-    }
+        body.dark textarea,
+        body.dark input[type="text"] {
+            background: #222;
+            color: white;
+            border: 1px solid #555;
+        }
 
-    #timeOutput {
-        background: white;
-        padding: 14px;
-        border-radius: 10px;
-        font-size: 18px;
-        border: 1px solid #ddd;
-        margin-bottom: 15px;
-        white-space: pre-wrap;
-    }
+        #timeOutput {
+            background: white;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 18px;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+            white-space: pre-wrap;
+        }
 
-    body.dark #timeOutput {
-        background: #222;
-        border: 1px solid #555;
-        color: white;
-    }
+        body.dark #timeOutput {
+            background: #222;
+            border: 1px solid #555;
+            color: white;
+        }
 
-    @media (max-width: 480px) {
-        body { padding: 12px; }
-        h2 { font-size: 20px; }
-        textarea, input { font-size: 16px; }
-    }
-    .section {
-    margin-bottom: 25px;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #ccc;
-    }
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
 
-body.dark .section {
-    border-bottom: 1px solid #444;
-   }
+            h2 {
+                font-size: 20px;
+            }
 
-.section h3 {
-    margin-bottom: 10px;
-    font-size: 20px;
-  }
+            textarea,
+            input {
+                font-size: 16px;
+            }
+        }
 
-  .catRow {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 8px;
-}
+        .section {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ccc;
+        }
 
-.catRow input, .catRow select {
-    flex: 1;
-}
+        body.dark .section {
+            border-bottom: 1px solid #444;
+        }
 
-.bar {
-    height: 20px;
-    border-radius: 5px;
-    margin: 4px 0;
-}
+        .section h3 {
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
 
-.deleteCatBtn {
-    background:#d9534f;
-    color:white;
-    border:none;
-    padding:8px 12px;
-    border-radius:6px;
-}
+        .catRow {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
 
-body.dark .deleteCatBtn {
-    background:#b33a3a;
-}
+        .catRow input,
+        .catRow select {
+            flex: 1;
+        }
 
-.taskItem {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:8px;
-    border-radius:6px;
-    margin-bottom:5px;
-    background:#eee;
-}
+        .bar {
+            height: 20px;
+            border-radius: 5px;
+            margin: 4px 0;
+        }
 
-body.dark .taskItem {
-    background:#222;
-}
+        .deleteCatBtn {
+            background: #d9534f;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
 
-.taskItem span {
-    flex:1;
-}
+        body.dark .deleteCatBtn {
+            background: #b33a3a;
+        }
 
-.taskDone {
-    text-decoration: line-through;
-    opacity:0.6;
-}
+        .taskItem {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            background: #eee;
+        }
 
+        body.dark .taskItem {
+            background: #222;
+        }
 
+        .taskItem span {
+            flex: 1;
+        }
 
-
-</style>
+        .taskDone {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+    </style>
 </head>
 
 <body>
 
-<h2>Parse / Reverse-Parse + Time Converter</h2>
+    <h2>Parse / Reverse-Parse + Time Converter</h2>
 
-<button id="themeToggle" class="theme-btn">🌙 Dark Mode</button>
+    <button id="themeToggle" class="theme-btn">🌙 Dark Mode</button>
 
-<!-- TIME INPUT -->
+    <!-- TIME INPUT -->
 
-<div class="section">
-    <h3>Time Converter</h3>
-    <input type="text" id="timeInput" placeholder="Enter Indian time (e.g. 14:30)">
-    <div id="timeOutput"></div>
-</div>
-
-<!--Percentage check -->
-
-<div class="section">
-    <h3>Percentage Calculator</h3>
-    <input type="number" id="baseNumber" placeholder="Enter number">
-    <input type="number" id="percentValue" placeholder="Enter %">
-    <div id="percentOutput"></div>
-</div>
-
-
-<!-- Number in words-->
-
-<div class="section">
-    <h3>Number to Words</h3>
-    <input type="number" id="numToWord" placeholder="Enter number(e.g. 100)">
-    <div id="numWordsOutput"></div>
-</div>
-
-
-
-
-<!--length converstion -->
-
-<div class="section">
-    <h3>Length Converter (Bi-directional)</h3>
-    <input type="number" id="lenValue" placeholder="Enter value">
-    <select id="lenUnit">
-        <option value="inch">Inch</option>
-        <option value="cm">Centimeter</option>
-        <option value="m">Meter</option>
-        <option value="mm">Millimeter</option>
-        <option value="ft">Feet</option>
-        <option value="yd">Yard</option>
-    </select>
-    <div id="lenOutput"></div>
-</div>
-
-<!--Salary splitter-->
-
-
-
-<div class="section">
-    <h3>Salary Splitter</h3>
-
-    <input type="number" id="totalSalary" placeholder="Enter total salary">
-
-    <div id="categoryList"></div>
-
-    <button id="addCategory">+ Add Category</button>
-    <button id="resetSalary" style="margin-top:10px; background:#d9534f; color:white;">Reset All</button>
-
-    <div id="salarySplitOutput"></div>
-</div>
-
-
-
-
-<!--Notes-->
-
-<div class="section">
-    <h3>Notes</h3>
-    <textarea id="notesBox" placeholder="Write your notes here..." style="height:120px;"></textarea>
-</div>
-
-<!--Daily Tasker-->
-
-<div class="section">
-    <h3>Daily Tasks</h3>
-
-    <div style="display:flex; gap:10px; margin-bottom:10px;">
-        <input type="text" id="taskInput" placeholder="Add new task..." style="flex:1;">
-        <button id="addTaskBtn">Add</button>
+    <div class="section">
+        <h3>Time Converter</h3>
+        <input type="text" id="timeInput" placeholder="Enter Indian time (e.g. 14:30)">
+        <div id="timeOutput"></div>
     </div>
 
-    <ul id="taskList" style="list-style:none; padding-left:0;"></ul>
-</div>
+    <!--Percentage check -->
+
+    <div class="section">
+        <h3>Percentage Calculator</h3>
+        <input type="number" id="baseNumber" placeholder="Enter number">
+        <input type="number" id="percentValue" placeholder="Enter %">
+        <div id="percentOutput"></div>
+    </div>
+
+
+    <!-- Number in words-->
+
+    <div class="section">
+        <h3>Number to Words</h3>
+        <input type="number" id="numToWord" placeholder="Enter number(e.g. 100)">
+        <div id="numWordsOutput"></div>
+    </div>
+
+
+
+
+    <!--length converstion -->
+
+    <div class="section">
+        <h3>Length Converter (Bi-directional)</h3>
+        <input type="number" id="lenValue" placeholder="Enter value">
+        <select id="lenUnit">
+            <option value="inch">Inch</option>
+            <option value="cm">Centimeter</option>
+            <option value="m">Meter</option>
+            <option value="mm">Millimeter</option>
+            <option value="ft">Feet</option>
+            <option value="yd">Yard</option>
+        </select>
+        <div id="lenOutput"></div>
+    </div>
+
+    <!--Salary splitter-->
+
+
+
+    <div class="section">
+        <h3>Salary Splitter</h3>
+
+        <input type="number" id="totalSalary" placeholder="Enter total salary">
+
+        <div id="categoryList"></div>
+
+        <button id="addCategory" style="padding:8px 12px; font-size:14px;">+ Add Category</button>
+        <button id="resetSalary" style="margin-top:10px; background:#d9534f; color:white;">Reset All</button>
+
+        <div id="salarySplitOutput"></div>
+    </div>
+
+
+
+
+    <!--Notes-->
+
+    <div class="section">
+        <h3>Notes</h3>
+        <textarea id="notesBox" placeholder="Write your notes here..." style="height:120px;"></textarea>
+    </div>
+
+    <!--Daily Tasker-->
+
+    <div class="section">
+        <h3>Daily Tasks</h3>
+
+        <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <input type="text" id="taskInput" placeholder="Add new task..." style="flex:1;">
+            <button id="addTaskBtn">Add</button>
+        </div>
+
+        <ul id="taskList" style="list-style:none; padding-left:0;"></ul>
+    </div>
+
+    <div class="section">
+        <h3>Live Cricket Score</h3>
+        <button id="refreshScore">Refresh Score</button>
+        <div id="cricketOutput" style="margin-top:10px;"></div>
+    </div>
+
+
+
+
+
+    <!--Flowchart Generator-->
 
 <div class="section">
-    <h3>Live Cricket Score</h3>
-    <button id="refreshScore">Refresh Score</button>
-    <div id="cricketOutput" style="margin-top:10px;"></div>
+    <h3>Flowchart Generator</h3>
+    <textarea id="mermaidInput" placeholder="Enter mermaid graph code here...
+Example:
+graph TD;
+  A-->B;
+  A-->C;
+  B-->D;
+  C-->D;" style="height: 150px; font-family: monospace;"></textarea>
+    <button id="renderFlowchartBtn" style="padding:10px 15px; background:#5cb85c; color:white; border:none; border-radius:6px; cursor:pointer;">Render Flowchart</button>
+    <div id="mermaidOutput" style="margin-top: 15px; padding: 10px; background: white; border: 1px solid #ccc; border-radius: 8px; overflow-x: auto; text-align: center;">
+        <!-- Chart will be rendered here -->
+    </div>
 </div>
-
-
-
-
 
 <!-- PARSE AND REVERSE PARSE -->
- <div class="section">
-    <h3>Parser & Reverse Parser</h3>
-    <textarea id="input" placeholder="Enter text..."></textarea>
-    <textarea id="reverse" placeholder="Reverse parsed text..."></textarea>
-</div>
+    <div class="section">
+        <h3>Parser & Reverse Parser</h3>
+        <textarea id="input" placeholder="Enter text..."></textarea>
+        <textarea id="reverse" placeholder="Reverse parsed text..."></textarea>
+    </div>
 
-<!-- <textarea id="input" placeholder="Enter text..."></textarea>
+    <!-- <textarea id="input" placeholder="Enter text..."></textarea>
 <textarea id="reverse" placeholder="Reverse parsed text..."></textarea> -->
 
+<!-- Load Mermaid -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 <script>
-// ================== PARSER MAP ==================
-const map = {
-    a:'z', b:'y', c:'x', d:'w', e:'v', f:'u', g:'t', h:'s', i:'r',
-    j:'q', k:'p', l:'o', m:'n', n:'m', o:'l', p:'k', q:'j', r:'i',
-    s:'h', t:'g', u:'f', v:'e', w:'d', x:'c', y:'b', z:'a',
+    mermaid.initialize({ startOnLoad: true, theme: document.body.classList.contains("dark") ? 'dark' : 'default' });
+</script>
 
-    '0':'1', '1':'0', '2':'9', '3':'8', '4':'7',
-    '5':'6', '6':'5', '7':'4', '8':'3', '9':'2',
+<script>
+        // ================== PARSER MAP ==================
+        const map = {
+            a: 'z', b: 'y', c: 'x', d: 'w', e: 'v', f: 'u', g: 't', h: 's', i: 'r',
+            j: 'q', k: 'p', l: 'o', m: 'n', n: 'm', o: 'l', p: 'k', q: 'j', r: 'i',
+            s: 'h', t: 'g', u: 'f', v: 'e', w: 'd', x: 'c', y: 'b', z: 'a',
 
-    '@':'#', '#':'@', '&':'?', '?':'&',
-    '"':"'", "'":'"', '*':'!', '!':'*',
-    '/':'+', '+':'/', ':':'.', '.':':',
-    '$':'{', '{':'$', '}':'\\', '\\':'}'
-};
+            '0': '1', '1': '0', '2': '9', '3': '8', '4': '7',
+            '5': '6', '6': '5', '7': '4', '8': '3', '9': '2',
 
-// Auto uppercase
-for (let key in map)
-    if (/[a-z]/.test(key)) map[key.toUpperCase()] = map[key].toUpperCase();
+            '@': '#', '#': '@', '&': '?', '?': '&',
+            '"': "'", "'": '"', '*': '!', '!': '*',
+            '/': '+', '+': '/', ':': '.', '.': ':',
+            '$': '{', '{': '$', '}': '\\', '\\': '}'
+        };
 
-function convertChar(ch){ return map[ch] ?? ch; }
+        // Auto uppercase
+        for (let key in map)
+            if (/[a-z]/.test(key)) map[key.toUpperCase()] = map[key].toUpperCase();
 
-// Two-way parsing
-input.addEventListener("input", () => {
-    reverse.value = [...input.value].map(convertChar).join("");
-});
-reverse.addEventListener("input", () => {
-    input.value = [...reverse.value].map(convertChar).join("");
-});
+        function convertChar(ch) { return map[ch] ?? ch; }
 
-// =============== UNIVERSAL TIME CONVERTER ===============
-// Works on all browsers (IST → UTC → ANY COUNTRY)
-function convertISTToTZ(hour, minute, tz) {
-    // IST → UTC (IST = UTC+5:30)
-    let utc = Date.UTC(2020, 0, 1, hour - 5, minute - 30);
+        // Two-way parsing
+        input.addEventListener("input", () => {
+            reverse.value = [...input.value].map(convertChar).join("");
+        });
+        reverse.addEventListener("input", () => {
+            input.value = [...reverse.value].map(convertChar).join("");
+        });
 
-    // Convert UTC → Target TZ
-    return new Date(utc).toLocaleTimeString("en-US", {
-        timeZone: tz,
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true
-    });
-}
+        // =============== UNIVERSAL TIME CONVERTER ===============
+        // Works on all browsers (IST → UTC → ANY COUNTRY)
+        function convertISTToTZ(hour, minute, tz) {
+            // IST → UTC (IST = UTC+5:30)
+            let utc = Date.UTC(2020, 0, 1, hour - 5, minute - 30);
 
-const countries = [
-    { flag: "🇮🇳", name: "India",     tz: "Asia/Kolkata" },
-    { flag: "🇺🇸", name: "USA",       tz: "America/New_York" },
-    { flag: "🇬🇧", name: "UK",        tz: "Europe/London" },
-    { flag: "🇩🇪", name: "Germany",   tz: "Europe/Berlin" },
-    { flag: "🇦🇪", name: "UAE",       tz: "Asia/Dubai" },
-    { flag: "🇶🇦", name: "Qatar",     tz: "Asia/Qatar" },
-    { flag: "🇦🇺", name: "Australia", tz: "Australia/Sydney" },
-    { flag: "🇨🇦", name: "Canada",    tz: "America/Toronto" },
-    { flag: "🇯🇵", name: "Japan",     tz: "Asia/Tokyo" },
-    { flag: "🇰🇷", name: "Korea",     tz: "Asia/Seoul" }
-];
+            // Convert UTC → Target TZ
+            return new Date(utc).toLocaleTimeString("en-US", {
+                timeZone: tz,
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true
+            });
+        }
 
-timeInput.addEventListener("input", () => {
-    let raw = timeInput.value.trim().toLowerCase().replace(/\s+/g, "");
+        const countries = [
+            { flag: "🇮🇳", name: "India", tz: "Asia/Kolkata" },
+            { flag: "🇺🇸", name: "USA", tz: "America/New_York" },
+            { flag: "🇬🇧", name: "UK", tz: "Europe/London" },
+            { flag: "🇩🇪", name: "Germany", tz: "Europe/Berlin" },
+            { flag: "🇦🇪", name: "UAE", tz: "Asia/Dubai" },
+            { flag: "🇶🇦", name: "Qatar", tz: "Asia/Qatar" },
+            { flag: "🇦🇺", name: "Australia", tz: "Australia/Sydney" },
+            { flag: "🇨🇦", name: "Canada", tz: "America/Toronto" },
+            { flag: "🇯🇵", name: "Japan", tz: "Asia/Tokyo" },
+            { flag: "🇰🇷", name: "Korea", tz: "Asia/Seoul" }
+        ];
 
-    // Check AM/PM format
-    let hour, minute;
+        timeInput.addEventListener("input", () => {
+            let raw = timeInput.value.trim().toLowerCase().replace(/\s+/g, "");
 
-    if (/^\d{1,2}:\d{2}(am|pm)$/.test(raw)) {
-        // Extract hour, minute, AM/PM
-        let hm = raw.match(/(\d{1,2}):(\d{2})(am|pm)/);
-        hour = parseInt(hm[1]);
-        minute = parseInt(hm[2]);
-        let ap = hm[3];
+            // Check AM/PM format
+            let hour, minute;
 
-        // Convert AM/PM → 24-hour
-        if (ap === "pm" && hour !== 12) hour += 12;
-        if (ap === "am" && hour === 12) hour = 0;
-    }
-    else if (/^\d{1,2}:\d{1,2}$/.test(raw)) {
-        // Normal 24 hr format
-        [hour, minute] = raw.split(":").map(Number);
-    }
-    else {
-        timeOutput.innerHTML = "⏱ Enter valid time: 1:30 PM or 13:30";
-        return;
-    }
+            if (/^\d{1,2}:\d{2}(am|pm)$/.test(raw)) {
+                // Extract hour, minute, AM/PM
+                let hm = raw.match(/(\d{1,2}):(\d{2})(am|pm)/);
+                hour = parseInt(hm[1]);
+                minute = parseInt(hm[2]);
+                let ap = hm[3];
 
-    // Validate range
-    if (hour > 23 || minute > 59) {
-        timeOutput.innerHTML = "⛔ Invalid time";
-        return;
-    }
+                // Convert AM/PM → 24-hour
+                if (ap === "pm" && hour !== 12) hour += 12;
+                if (ap === "am" && hour === 12) hour = 0;
+            }
+            else if (/^\d{1,2}:\d{1,2}$/.test(raw)) {
+                // Normal 24 hr format
+                [hour, minute] = raw.split(":").map(Number);
+            }
+            else {
+                timeOutput.innerHTML = "⏱ Enter valid time: 1:30 PM or 13:30";
+                return;
+            }
 
-    // Build output
-    let html = "<b>Converted Time:</b><br>";
+            // Validate range
+            if (hour > 23 || minute > 59) {
+                timeOutput.innerHTML = "⛔ Invalid time";
+                return;
+            }
 
-    countries.forEach(c => {
-        html += `${c.flag} ${c.name}: ${convertISTToTZ(hour, minute, c.tz)}<br>`;
-    });
+            // Build output
+            let html = "<b>Converted Time:</b><br>";
 
-    timeOutput.innerHTML = html;
-});
+            countries.forEach(c => {
+                html += `${c.flag} ${c.name}: ${convertISTToTZ(hour, minute, c.tz)}<br>`;
+            });
 
-// NUMBER TO WORDS CONVERTER
-function numberToWords(num) {
-    if (num === 0) return "zero";
+            timeOutput.innerHTML = html;
+        });
 
-    const ones = ["", "one","two","three","four","five","six","seven","eight","nine"];
-    const teens = ["ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen"];
-    const tens = ["", "", "twenty","thirty","forty","fifty","sixty","seventy","eighty","ninety"];
+        // NUMBER TO WORDS CONVERTER
+        function numberToWords(num) {
+            if (num === 0) return "zero";
 
-    function convert(n) {
-        if (n < 10) return ones[n];
-        if (n < 20) return teens[n - 10];
-        if (n < 100) return tens[Math.floor(n/10)] + (n%10!==0 ? " " + ones[n%10] : "");
-        if (n < 1000) return ones[Math.floor(n/100)] + " hundred" + (n%100!==0 ? " " + convert(n%100) : "");
-        if (n < 1000000) return convert(Math.floor(n/1000)) + " thousand" + (n%1000!==0 ? " " + convert(n%1000) : "");
-        if (n < 1000000000) return convert(Math.floor(n/1000000)) + " million" + (n%1000000!==0 ? " " + convert(n%1000000) : "");
-        return "number too large";
-    }
+            const ones = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+            const teens = ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
+            const tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
 
-    return convert(num);
-}
+            function convert(n) {
+                if (n < 10) return ones[n];
+                if (n < 20) return teens[n - 10];
+                if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 !== 0 ? " " + ones[n % 10] : "");
+                if (n < 1000) return ones[Math.floor(n / 100)] + " hundred" + (n % 100 !== 0 ? " " + convert(n % 100) : "");
+                if (n < 1000000) return convert(Math.floor(n / 1000)) + " thousand" + (n % 1000 !== 0 ? " " + convert(n % 1000) : "");
+                if (n < 1000000000) return convert(Math.floor(n / 1000000)) + " million" + (n % 1000000 !== 0 ? " " + convert(n % 1000000) : "");
+                return "number too large";
+            }
 
-// Live update when typing number
-document.getElementById("numToWord").addEventListener("input", () => {
-    let val = document.getElementById("numToWord").value;
-    let out = document.getElementById("numWordsOutput");
+            return convert(num);
+        }
 
-    if (val === "" || isNaN(val)) {
-        out.innerHTML = "";
-        return;
-    }
+        // Live update when typing number
+        document.getElementById("numToWord").addEventListener("input", () => {
+            let val = document.getElementById("numToWord").value;
+            let out = document.getElementById("numWordsOutput");
 
-    out.innerHTML = `<b>In Words:</b> ${numberToWords(parseInt(val))}`;
-});
+            if (val === "" || isNaN(val)) {
+                out.innerHTML = "";
+                return;
+            }
 
-// BI-DIRECTIONAL LENGTH CONVERTER
+            out.innerHTML = `<b>In Words:</b> ${numberToWords(parseInt(val))}`;
+        });
 
-const lengthFactors = {
-    inch: 1,
-    cm: 0.3937007874,
-    m: 39.37007874,
-    mm: 0.03937007874,
-    ft: 12,
-    yd: 36
-};
+        // BI-DIRECTIONAL LENGTH CONVERTER
 
-function convertFromInch(inch) {
-    return {
-        inch: inch,
-        cm: inch * 2.54,
-        m: inch * 0.0254,
-        mm: inch * 25.4,
-        ft: inch / 12,
-        yd: inch / 36
-    };
-}
+        const lengthFactors = {
+            inch: 1,
+            cm: 0.3937007874,
+            m: 39.37007874,
+            mm: 0.03937007874,
+            ft: 12,
+            yd: 36
+        };
 
-function updateLength() {
-    let val = parseFloat(document.getElementById("lenValue").value);
-    let unit = document.getElementById("lenUnit").value;
-    const out = document.getElementById("lenOutput");
+        function convertFromInch(inch) {
+            return {
+                inch: inch,
+                cm: inch * 2.54,
+                m: inch * 0.0254,
+                mm: inch * 25.4,
+                ft: inch / 12,
+                yd: inch / 36
+            };
+        }
 
-    if (isNaN(val)) {
-        out.innerHTML = "";
-        return;
-    }
+        function updateLength() {
+            let val = parseFloat(document.getElementById("lenValue").value);
+            let unit = document.getElementById("lenUnit").value;
+            const out = document.getElementById("lenOutput");
 
-    // Convert any unit → inches
-    let inchValue = val * lengthFactors[unit];
+            if (isNaN(val)) {
+                out.innerHTML = "";
+                return;
+            }
 
-    // Convert inch → all units
-    let res = convertFromInch(inchValue);
+            // Convert any unit → inches
+            let inchValue = val * lengthFactors[unit];
 
-    out.innerHTML = `
+            // Convert inch → all units
+            let res = convertFromInch(inchValue);
+
+            out.innerHTML = `
         <b>Converted:</b><br>
         Inch: ${res.inch.toFixed(4)}<br>
         CM: ${res.cm.toFixed(4)}<br>
@@ -444,56 +482,56 @@ function updateLength() {
         Feet: ${res.ft.toFixed(4)}<br>
         Yard: ${res.yd.toFixed(6)}
     `;
-}
+        }
 
-document.getElementById("lenValue").addEventListener("input", updateLength);
-document.getElementById("lenUnit").addEventListener("change", updateLength);
+        document.getElementById("lenValue").addEventListener("input", updateLength);
+        document.getElementById("lenUnit").addEventListener("change", updateLength);
 
 
-// ================= DARK MODE ==================
-if (localStorage.getItem("theme") === "dark") {
-    document.body.classList.add("dark");
-    themeToggle.textContent = "☀️ Light Mode";
-}
+        // ================= DARK MODE ==================
+        if (localStorage.getItem("theme") === "dark") {
+            document.body.classList.add("dark");
+            themeToggle.textContent = "☀️ Light Mode";
+        }
 
-themeToggle.addEventListener("click", () => {
-    document.body.classList.toggle("dark");
+        themeToggle.addEventListener("click", () => {
+            document.body.classList.toggle("dark");
 
-    if (document.body.classList.contains("dark")) {
-        themeToggle.textContent = "☀️ Light Mode";
-        localStorage.setItem("theme", "dark");
-    } else {
-        themeToggle.textContent = "🌙 Dark Mode";
-        localStorage.setItem("theme", "light");
-    }
-});
+            if (document.body.classList.contains("dark")) {
+                themeToggle.textContent = "☀️ Light Mode";
+                localStorage.setItem("theme", "dark");
+            } else {
+                themeToggle.textContent = "🌙 Dark Mode";
+                localStorage.setItem("theme", "light");
+            }
+        });
 
-function calculatePercent() {
-    let num = parseFloat(document.getElementById("baseNumber").value);
-    let per = parseFloat(document.getElementById("percentValue").value);
-    const out = document.getElementById("percentOutput");
+        function calculatePercent() {
+            let num = parseFloat(document.getElementById("baseNumber").value);
+            let per = parseFloat(document.getElementById("percentValue").value);
+            const out = document.getElementById("percentOutput");
 
-    if (isNaN(num) || isNaN(per)) {
-        out.innerHTML = "Enter valid number and percentage";
-        return;
-    }
+            if (isNaN(num) || isNaN(per)) {
+                out.innerHTML = "Enter valid number and percentage";
+                return;
+            }
 
-    let result = (num * per) / 100;
+            let result = (num * per) / 100;
 
-    out.innerHTML = `<b>Result:</b> ${result}`;
-}
+            out.innerHTML = `<b>Result:</b> ${result}`;
+        }
 
-document.getElementById("baseNumber").addEventListener("input", calculatePercent);
-document.getElementById("percentValue").addEventListener("input", calculatePercent);
+        document.getElementById("baseNumber").addEventListener("input", calculatePercent);
+        document.getElementById("percentValue").addEventListener("input", calculatePercent);
 
-// ================= SALARY SPLITTER (FINAL VERSION) =================
+        // ================= SALARY SPLITTER (FINAL VERSION) =================
 
-// Create a row dynamically
-function createCategoryRow(name = "", type = "percent", value = "") {
-    const row = document.createElement("div");
-    row.className = "catRow";
+        // Create a row dynamically
+        function createCategoryRow(name = "", type = "percent", value = "") {
+            const row = document.createElement("div");
+            row.className = "catRow";
 
-    row.innerHTML = `
+            row.innerHTML = `
         <input type="text" class="catName" placeholder="Category" value="${name}">
         <select class="catType">
             <option value="percent" ${type === "percent" ? "selected" : ""}>%</option>
@@ -501,87 +539,87 @@ function createCategoryRow(name = "", type = "percent", value = "") {
         </select>
         <input type="number" class="catValue" placeholder="Value" value="${value}">
     `;
-    return row;
-}
+            return row;
+        }
 
-// Add default row if empty
-document.getElementById("categoryList").appendChild(createCategoryRow());
+        // Add default row if empty
+        document.getElementById("categoryList").appendChild(createCategoryRow());
 
-// Add new row button
-document.getElementById("addCategory").addEventListener("click", () => {
-    document.getElementById("categoryList").appendChild(createCategoryRow());
-    saveCategories();
-});
+        // Add new row button
+        document.getElementById("addCategory").addEventListener("click", () => {
+            document.getElementById("categoryList").appendChild(createCategoryRow());
+            saveCategories();
+        });
 
-// Salary calculation and color bars
-function calculateSalarySplit() {
-    const total = parseFloat(document.getElementById("totalSalary").value);
-    const out = document.getElementById("salarySplitOutput");
+        // Salary calculation and color bars
+        function calculateSalarySplit() {
+            const total = parseFloat(document.getElementById("totalSalary").value);
+            const out = document.getElementById("salarySplitOutput");
 
-    if (isNaN(total) || total <= 0) {
-        out.innerHTML = "";
-        return;
-    }
+            if (isNaN(total) || total <= 0) {
+                out.innerHTML = "";
+                return;
+            }
 
-    const names = document.querySelectorAll(".catName");
-    const types = document.querySelectorAll(".catType");
-    const values = document.querySelectorAll(".catValue");
+            const names = document.querySelectorAll(".catName");
+            const types = document.querySelectorAll(".catType");
+            const values = document.querySelectorAll(".catValue");
 
-    let used = 0;
-    let html = "";
-    let bars = "";
+            let used = 0;
+            let html = "";
+            let bars = "";
 
-    for (let i = 0; i < names.length; i++) {
-        let name = names[i].value.trim();
-        let type = types[i].value;
-        let val = parseFloat(values[i].value);
+            for (let i = 0; i < names.length; i++) {
+                let name = names[i].value.trim();
+                let type = types[i].value;
+                let val = parseFloat(values[i].value);
 
-        if (name !== "" && !isNaN(val)) {
-            let amount = type === "percent" ? (total * val) / 100 : val;
-            used += amount;
+                if (name !== "" && !isNaN(val)) {
+                    let amount = type === "percent" ? (total * val) / 100 : val;
+                    used += amount;
 
-            let pct = (amount / total) * 100;
-            let color = `hsl(${(i * 45) % 360}, 80%, 60%)`;
+                    let pct = (amount / total) * 100;
+                    let color = `hsl(${(i * 45) % 360}, 80%, 60%)`;
 
-            bars += `
+                    bars += `
                 <div class="bar" style="width:${pct}%; background:${color}></div>
                 ${name}: ₹${amount.toFixed(2)} (${type === "percent" ? val + "%" : "fixed"})<br>
             `;
-        }
-    }
+                }
+            }
 
-    let remaining = total - used;
-    let remPct = (remaining / total) * 100;
+            let remaining = total - used;
+            let remPct = (remaining / total) * 100;
 
-    bars += `
+            bars += `
         <div class="bar" style="width:${remPct}%; background:hsl(200,80%,60%)"></div>
         <b>Remaining:</b> ₹${remaining.toFixed(2)}
     `;
 
-    out.innerHTML = bars;
-}
+            out.innerHTML = bars;
+        }
 
-// Auto calculate + save
-document.getElementById("totalSalary").addEventListener("input", () => {
-    calculateSalarySplit();
-    saveCategories();
-});
+        // Auto calculate + save
+        document.getElementById("totalSalary").addEventListener("input", () => {
+            calculateSalarySplit();
+            saveCategories();
+        });
 
-document.getElementById("categoryList").addEventListener("input", () => {
-    calculateSalarySplit();
-    saveCategories();
-});
+        document.getElementById("categoryList").addEventListener("input", () => {
+            calculateSalarySplit();
+            saveCategories();
+        });
 
 
 
-// ================= SALARY SPLITTER WITH DELETE + RESET =================
+        // ================= SALARY SPLITTER WITH DELETE + RESET =================
 
-// Create a row dynamically (with delete button)
-function createCategoryRow(name = "", type = "percent", value = "") {
-    const row = document.createElement("div");
-    row.className = "catRow";
+        // Create a row dynamically (with delete button)
+        function createCategoryRow(name = "", type = "percent", value = "") {
+            const row = document.createElement("div");
+            row.className = "catRow";
 
-    row.innerHTML = `
+            row.innerHTML = `
         <input type="text" class="catName" placeholder="Category" value="${name}">
         <select class="catType">
             <option value="percent" ${type === "percent" ? "selected" : ""}>%</option>
@@ -591,267 +629,305 @@ function createCategoryRow(name = "", type = "percent", value = "") {
         <button class="deleteCatBtn">X</button>
     `;
 
-    // Delete row handler
-    row.querySelector(".deleteCatBtn").addEventListener("click", () => {
-        row.remove();
-        saveCategories();
-        calculateSalarySplit();
-    });
+            // Delete row handler
+            row.querySelector(".deleteCatBtn").addEventListener("click", () => {
+                row.remove();
+                saveCategories();
+                calculateSalarySplit();
+            });
 
-    return row;
-}
+            return row;
+        }
 
-// Add default category row on start
-document.getElementById("categoryList").appendChild(createCategoryRow());
+        // Add default category row on start
+        document.getElementById("categoryList").appendChild(createCategoryRow());
 
-// Add new row button
-document.getElementById("addCategory").addEventListener("click", () => {
-    document.getElementById("categoryList").appendChild(createCategoryRow());
-    saveCategories();
-});
+        // Add new row button
+        document.getElementById("addCategory").addEventListener("click", () => {
+            document.getElementById("categoryList").appendChild(createCategoryRow());
+            saveCategories();
+        });
 
-// Reset salary system completely
-document.getElementById("resetSalary").addEventListener("click", () => {
-    localStorage.removeItem("salaryData");
-    document.getElementById("totalSalary").value = "";
-    document.getElementById("categoryList").innerHTML = "";
-    document.getElementById("categoryList").appendChild(createCategoryRow());
-    document.getElementById("salarySplitOutput").innerHTML = "";
-});
+        // Reset salary system completely
+        document.getElementById("resetSalary").addEventListener("click", () => {
+            localStorage.removeItem("salaryData");
+            document.getElementById("totalSalary").value = "";
+            document.getElementById("categoryList").innerHTML = "";
+            document.getElementById("categoryList").appendChild(createCategoryRow());
+            document.getElementById("salarySplitOutput").innerHTML = "";
+        });
 
-// Salary calculation logic
-function calculateSalarySplit() {
-    const total = parseFloat(document.getElementById("totalSalary").value);
-    const out = document.getElementById("salarySplitOutput");
+        // Salary calculation logic
+        function calculateSalarySplit() {
+            const total = parseFloat(document.getElementById("totalSalary").value);
+            const out = document.getElementById("salarySplitOutput");
 
-    if (isNaN(total) || total <= 0) {
-        out.innerHTML = "";
-        return;
-    }
+            if (isNaN(total) || total <= 0) {
+                out.innerHTML = "";
+                return;
+            }
 
-    const names = document.querySelectorAll(".catName");
-    const types = document.querySelectorAll(".catType");
-    const values = document.querySelectorAll(".catValue");
+            const names = document.querySelectorAll(".catName");
+            const types = document.querySelectorAll(".catType");
+            const values = document.querySelectorAll(".catValue");
 
-    let used = 0;
-    let bars = "";
+            let used = 0;
+            let bars = "";
 
-    for (let i = 0; i < names.length; i++) {
-        let name = names[i].value.trim();
-        let type = types[i].value;
-        let val = parseFloat(values[i].value);
+            for (let i = 0; i < names.length; i++) {
+                let name = names[i].value.trim();
+                let type = types[i].value;
+                let val = parseFloat(values[i].value);
 
-        if (name !== "" && !isNaN(val)) {
-            let amount = type === "percent" ? (total * val) / 100 : val;
-            used += amount;
+                if (name !== "" && !isNaN(val)) {
+                    let amount = type === "percent" ? (total * val) / 100 : val;
+                    used += amount;
 
-            let pct = (amount / total) * 100;
-            let color = `hsl(${(i * 45) % 360}, 80%, 60%)`;
+                    let pct = (amount / total) * 100;
+                    let color = `hsl(${(i * 45) % 360}, 80%, 60%)`;
 
-            bars += `
+                    bars += `
                 <div class="bar" style="width:${pct}%; background:${color}"></div>
                 <b>${name}</b>: ₹${amount.toFixed(2)} 
                 ${type === "percent" ? `(${val}%)` : `(₹${val} fixed)`}<br>
             `;
-        }
-    }
+                }
+            }
 
-    let remaining = total - used;
-    let remPct = (remaining / total) * 100;
+            let remaining = total - used;
+            let remPct = (remaining / total) * 100;
 
-    bars += `
+            bars += `
         <br>
         <div class="bar" style="width:${remPct}%; background:hsl(200,80%,60%)"></div>
         <b>Remaining Salary:</b> ₹${remaining.toFixed(2)}
     `;
 
-    out.innerHTML = bars;
-}
+            out.innerHTML = bars;
+        }
 
-// Auto calculation + save
-document.getElementById("totalSalary").addEventListener("input", () => {
-    calculateSalarySplit();
-    saveCategories();
-});
-
-document.getElementById("categoryList").addEventListener("input", () => {
-    calculateSalarySplit();
-    saveCategories();
-});
-
-// Save categories to localStorage
-function saveCategories() {
-    let total = document.getElementById("totalSalary").value;
-    let names = document.querySelectorAll(".catName");
-    let types = document.querySelectorAll(".catType");
-    let values = document.querySelectorAll(".catValue");
-
-    let data = {
-        totalSalary: total,
-        categories: []
-    };
-
-    for (let i = 0; i < names.length; i++) {
-        data.categories.push({
-            name: names[i].value,
-            type: types[i].value,
-            value: values[i].value
+        // Auto calculation + save
+        document.getElementById("totalSalary").addEventListener("input", () => {
+            calculateSalarySplit();
+            saveCategories();
         });
-    }
 
-    localStorage.setItem("salaryData", JSON.stringify(data));
-}
-
-// Load saved items on startup
-function loadCategories() {
-    const saved = localStorage.getItem("salaryData");
-    if (!saved) return;
-
-    const data = JSON.parse(saved);
-
-    document.getElementById("totalSalary").value = data.totalSalary;
-    document.getElementById("categoryList").innerHTML = "";
-
-    data.categories.forEach(c => {
-        document.getElementById("categoryList")
-        .appendChild(createCategoryRow(c.name, c.type, c.value));
-    });
-
-    calculateSalarySplit();
-}
-
-loadCategories();
-
-
-
-
-
-// ====================== NOTES SAVE & LOAD ======================
-
-// Auto-load saved notes
-function loadNotes() {
-    const savedNotes = localStorage.getItem("myNotes");
-    if (savedNotes) {
-        document.getElementById("notesBox").value = savedNotes;
-    }
-}
-
-// Auto-save notes while typing
-document.getElementById("notesBox").addEventListener("input", () => {
-    localStorage.setItem("myNotes", document.getElementById("notesBox").value);
-});
-
-// Run on startup
-loadNotes();
-
-// ===================== DAILY TASK SYSTEM =====================
-
-// Load existing tasks
-function loadTasks() {
-    const saved = localStorage.getItem("dailyTasks");
-    if (!saved) return;
-
-    const tasks = JSON.parse(saved);
-    tasks.forEach(t => addTaskToUI(t.text, t.done));
-}
-
-// Save tasks
-function saveTasks() {
-    const taskElements = document.querySelectorAll(".taskItem");
-    let tasks = [];
-
-    taskElements.forEach(li => {
-        tasks.push({
-            text: li.querySelector("span").textContent,
-            done: li.classList.contains("taskDone")
+        document.getElementById("categoryList").addEventListener("input", () => {
+            calculateSalarySplit();
+            saveCategories();
         });
-    });
 
-    localStorage.setItem("dailyTasks", JSON.stringify(tasks));
-}
+        // Save categories to localStorage
+        function saveCategories() {
+            let total = document.getElementById("totalSalary").value;
+            let names = document.querySelectorAll(".catName");
+            let types = document.querySelectorAll(".catType");
+            let values = document.querySelectorAll(".catValue");
 
-// Add a task to the UI
-function addTaskToUI(text, done = false) {
-    const li = document.createElement("li");
-    li.className = "taskItem";
-    if (done) li.classList.add("taskDone");
+            let data = {
+                totalSalary: total,
+                categories: []
+            };
 
-    li.innerHTML = `
+            for (let i = 0; i < names.length; i++) {
+                data.categories.push({
+                    name: names[i].value,
+                    type: types[i].value,
+                    value: values[i].value
+                });
+            }
+
+            localStorage.setItem("salaryData", JSON.stringify(data));
+        }
+
+        // Load saved items on startup
+        function loadCategories() {
+            const saved = localStorage.getItem("salaryData");
+            if (!saved) return;
+
+            const data = JSON.parse(saved);
+
+            document.getElementById("totalSalary").value = data.totalSalary;
+            document.getElementById("categoryList").innerHTML = "";
+
+            data.categories.forEach(c => {
+                document.getElementById("categoryList")
+                    .appendChild(createCategoryRow(c.name, c.type, c.value));
+            });
+
+            calculateSalarySplit();
+        }
+
+        loadCategories();
+
+
+
+
+
+        // ====================== NOTES SAVE & LOAD ======================
+
+        // Auto-load saved notes
+        function loadNotes() {
+            const savedNotes = localStorage.getItem("myNotes");
+            if (savedNotes) {
+                document.getElementById("notesBox").value = savedNotes;
+            }
+        }
+
+        // Auto-save notes while typing
+        document.getElementById("notesBox").addEventListener("input", () => {
+            localStorage.setItem("myNotes", document.getElementById("notesBox").value);
+        });
+
+        // Run on startup
+        loadNotes();
+
+        // ===================== DAILY TASK SYSTEM =====================
+
+        // Load existing tasks
+        function loadTasks() {
+            const saved = localStorage.getItem("dailyTasks");
+            if (!saved) return;
+
+            const tasks = JSON.parse(saved);
+            tasks.forEach(t => addTaskToUI(t.text, t.done));
+        }
+
+        // Save tasks
+        function saveTasks() {
+            const taskElements = document.querySelectorAll(".taskItem");
+            let tasks = [];
+
+            taskElements.forEach(li => {
+                tasks.push({
+                    text: li.querySelector("span").textContent,
+                    done: li.classList.contains("taskDone")
+                });
+            });
+
+            localStorage.setItem("dailyTasks", JSON.stringify(tasks));
+        }
+
+        // Add a task to the UI
+        function addTaskToUI(text, done = false) {
+            const li = document.createElement("li");
+            li.className = "taskItem";
+            if (done) li.classList.add("taskDone");
+
+            li.innerHTML = `
         <span>${text}</span>
         <button class="toggleBtn">✓</button>
         <button class="deleteBtn">✗</button>
     `;
 
-    // Toggle complete
-    li.querySelector(".toggleBtn").addEventListener("click", () => {
-        li.classList.toggle("taskDone");
-        saveTasks();
-    });
+            // Toggle complete
+            li.querySelector(".toggleBtn").addEventListener("click", () => {
+                li.classList.toggle("taskDone");
+                saveTasks();
+            });
 
-    // Delete task
-    li.querySelector(".deleteBtn").addEventListener("click", () => {
-        li.remove();
-        saveTasks();
-    });
+            // Delete task
+            li.querySelector(".deleteBtn").addEventListener("click", () => {
+                li.remove();
+                saveTasks();
+            });
 
-    document.getElementById("taskList").appendChild(li);
-    saveTasks();
-}
-
-// Add button click
-document.getElementById("addTaskBtn").addEventListener("click", () => {
-    const text = taskInput.value.trim();
-    if (text === "") return;
-
-    addTaskToUI(text);
-    taskInput.value = "";
-});
-
-// Enter key to add task
-document.getElementById("taskInput").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-        addTaskBtn.click();
-    }
-});
-
-// Load tasks on startup
-loadTasks();
-
-// ==================== LIVE CRICKET SCORE (ESPN API) ====================
-async function loadCricketScore() {
-    const out = document.getElementById("cricketOutput");
-    out.innerHTML = "Loading...";
-
-    try {
-        const res = await fetch("https://site.web.api.espn.com/apis/site/v2/sports/cricket/scoreboard");
-        const data = await res.json();
-
-        if (!data.events || data.events.length === 0) {
-            out.innerHTML = "No live matches right now.";
-            return;
+            document.getElementById("taskList").appendChild(li);
+            saveTasks();
         }
 
-        let match = data.events[0].competitions[0];
+        // Add button click
+        document.getElementById("addTaskBtn").addEventListener("click", () => {
+            const text = taskInput.value.trim();
+            if (text === "") return;
 
-        let t1 = match.competitors[0];
-        let t2 = match.competitors[1];
+            addTaskToUI(text);
+            taskInput.value = "";
+        });
 
-        out.innerHTML = `
+        // Enter key to add task
+        document.getElementById("taskInput").addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                addTaskBtn.click();
+            }
+        });
+
+        // Load tasks on startup
+        loadTasks();
+
+        // ==================== LIVE CRICKET SCORE (ESPN API) ====================
+        async function loadCricketScore() {
+            const out = document.getElementById("cricketOutput");
+            out.innerHTML = "Loading...";
+
+            try {
+                const res = await fetch("https://site.web.api.espn.com/apis/site/v2/sports/cricket/scoreboard");
+                const data = await res.json();
+
+                if (!data.events || data.events.length === 0) {
+                    out.innerHTML = "No live matches right now.";
+                    return;
+                }
+
+                let match = data.events[0].competitions[0];
+
+                let t1 = match.competitors[0];
+                let t2 = match.competitors[1];
+
+                out.innerHTML = `
             <b>${t1.team.displayName} vs ${t2.team.displayName}</b><br><br>
             ${t1.team.abbreviation}: ${t1.score ?? "–"}<br>
             ${t2.team.abbreviation}: ${t2.score ?? "–"}<br><br>
             <b>Status:</b> ${match.status.type.detail}
         `;
-    } catch (err) {
-        out.innerHTML = "❌ Unable to load score.";
-    }
-}
+            } catch (err) {
+                out.innerHTML = "❌ Unable to load score.";
+            }
+        }
 
-// Manual refresh button
+        // Manual refresh button
 document.getElementById("refreshScore").addEventListener("click", loadCricketScore);
 
 // Auto load on page start
 loadCricketScore();
+
+// ===================== FLOWCHART GENERATOR =====================
+
+document.getElementById("renderFlowchartBtn").addEventListener("click", async () => {
+    const inputCode = document.getElementById("mermaidInput").value.trim();
+    const outputDiv = document.getElementById("mermaidOutput");
+
+    if (!inputCode) {
+        outputDiv.innerHTML = "<p style='color:red;'>Please enter some Mermaid code.</p>";
+        return;
+    }
+
+    try {
+        // Clear previous output
+        outputDiv.innerHTML = "";
+        // Render the flowchart
+        const { svg } = await mermaid.render('mermaidGraph', inputCode);
+        outputDiv.innerHTML = svg;
+    } catch (error) {
+        outputDiv.innerHTML = `<p style='color:red;'>Syntax Error: ${error.message}</p>`;
+    }
+});
+
+// Update mermaid theme based on body class when rendering
+const observer = new MutationObserver(() => {
+    const isDark = document.body.classList.contains("dark");
+    mermaid.initialize({ theme: isDark ? 'dark' : 'default' });
+});
+
+observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+// Default flowchart example on load
+const defaultExample = `graph TD;
+    A[Start] --> B{Is it working?};
+    B -- Yes --> C[Great!];
+    B -- No --> D[Fix it!];`;
+document.getElementById("mermaidInput").value = defaultExample;
+document.getElementById("renderFlowchartBtn").click();
 
 
 
@@ -860,4 +936,5 @@ loadCricketScore();
 </script>
 
 </body>
+
 </html>
