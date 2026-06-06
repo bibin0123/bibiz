@@ -191,6 +191,7 @@
         #calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
+            grid-auto-rows: minmax(50px, auto);
             gap: 5px;
         }
 
@@ -219,6 +220,27 @@
             background: orange !important;
             color: white;
         }
+
+            .greenDay {
+        background: #1f7a1f !important;
+        color: white;
+        }
+
+            .redDay {
+                background: #8b1e1e !important;
+                color: white;
+        }
+
+            .yellowDay {
+                background: #b8860b !important;
+                color: white;
+        }
+
+            .noteText {
+                font-size: 11px;
+                margin-top: 5px;
+                word-break: break-word;
+       }
     </style>
 </head>
 
@@ -1096,6 +1118,8 @@ function loadCalendar() {
 
         const empty = document.createElement("div");
 
+        
+
         calendar.appendChild(empty);
     }
 
@@ -1120,32 +1144,106 @@ function loadCalendar() {
 
         const key = `${year}-${month}-${day}`;
 
-        const savedNote =
-        localStorage.getItem(key);
+        // const savedNote =
+        // localStorage.getItem(key);
 
-        if(savedNote) {
-            div.classList.add("has-note");
+        // if(savedNote) {
+        //     div.classList.add("has-note");
+        // }
+
+        // div.addEventListener("click", () => {
+
+        //     const existing =
+        //     localStorage.getItem(key) || "";
+
+        //     const note =
+        //     prompt(`Notes for ${day}/${month+1}/${year}`, existing);
+
+        //     if(note !== null) {
+
+        //         if(note.trim() === "") {
+        //             localStorage.removeItem(key);
+        //         }
+        //         else {
+        //             localStorage.setItem(key, note);
+        //         }
+
+        //         loadCalendar();
+        //     }
+        // });
+
+        const saved =
+        JSON.parse(localStorage.getItem(key)) || {};
+
+        if(saved.type === "green") {
+            div.classList.add("greenDay");
+        }
+
+        if(saved.type === "red") {
+            div.classList.add("redDay");
+        }
+
+        if(saved.type === "yellow") {
+            div.classList.add("yellowDay");
+        }
+
+        if(saved.note) {
+
+            div.innerHTML += `
+                <div class="noteText">
+                    ${saved.note}
+                </div>
+            `;
         }
 
         div.addEventListener("click", () => {
 
-            const existing =
-            localStorage.getItem(key) || "";
-
             const note =
-            prompt(`Notes for ${day}/${month+1}/${year}`, existing);
+            prompt(
+                `Note for ${day}/${month+1}/${year}`,
+                saved.note || ""
+            );
 
-            if(note !== null) {
+            if(note === null) return;
 
-                if(note.trim() === "") {
-                    localStorage.removeItem(key);
-                }
-                else {
-                    localStorage.setItem(key, note);
-                }
+            const status =
+            prompt(
+        `
+        Enter Status:
 
-                loadCalendar();
+        P = Present
+        A = Absent
+        L = Leave
+        `,
+                saved.status || ""
+            );
+
+            if(status === null) return;
+
+            let type = "";
+
+            if(status.toUpperCase() === "P") {
+                type = "green";
             }
+
+            else if(status.toUpperCase() === "A") {
+                type = "red";
+            }
+
+            else if(status.toUpperCase() === "L") {
+                type = "yellow";
+            }
+
+            localStorage.setItem(
+                key,
+                JSON.stringify({
+                    note: note,
+                    status: status,
+                    type: type
+                })
+            );
+
+            loadCalendar();
         });
 
         calendar.appendChild(div);
@@ -1154,24 +1252,27 @@ function loadCalendar() {
 
 document.getElementById("prevMonth")
 .addEventListener("click", () => {
-
-    currentDate.setMonth(currentDate.getMonth() - 1);
+    currentDate = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() - 1,
+        1
+    );
 
     loadCalendar();
 });
 
 document.getElementById("nextMonth")
 .addEventListener("click", () => {
-
-    currentDate.setMonth(currentDate.getMonth() + 1);
+    currentDate = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth() + 1,
+        1
+    );
 
     loadCalendar();
 });
 
 loadCalendar();
-
-
-
 
 
 
