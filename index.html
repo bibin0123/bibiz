@@ -241,6 +241,43 @@
                 margin-top: 5px;
                 word-break: break-word;
        }
+       .inventoryCard {
+
+                background:#eee;
+
+                padding:12px;
+
+                border-radius:10px;
+
+                margin-top:10px;
+            }
+
+            body.dark .inventoryCard {
+
+                background:#222;
+            }
+
+            .invGreen {
+
+                border-left:6px solid limegreen;
+            }
+
+            .invYellow {
+
+                border-left:6px solid orange;
+            }
+
+            .invRed {
+
+                border-left:6px solid red;
+            }
+
+            .inventoryTitle {
+
+                font-size:18px;
+
+                font-weight:bold;
+            }
     </style>
 </head>
 
@@ -373,6 +410,54 @@
     </div>
 
     <div id="calendar"></div>
+
+</div>
+
+<div class="section">
+
+    <h3>Inventory Rack Manager</h3>
+
+    <input type="text" id="rackName" placeholder="Rack / Shelf">
+
+    <input type="text" id="itemName" placeholder="Item Name">
+
+    <select id="itemCategory">
+
+        <option>Books</option>
+        <option>Electronics</option>
+        <option>Accessories</option>
+        <option>Tools</option>
+
+    </select>
+
+    <input type="number" id="itemQty" placeholder="Quantity">
+
+    <select id="itemStatus">
+
+        <option value="available">Available</option>
+        <option value="low">Low Stock</option>
+        <option value="out">Out of Stock</option>
+
+    </select>
+
+    <textarea
+        id="itemNotes"
+        placeholder="Notes..."
+        style="height:80px;"
+    ></textarea>
+
+    <button id="addInventoryBtn">
+        Add Item
+    </button>
+
+    <input
+        type="text"
+        id="searchInventory"
+        placeholder="Search item..."
+        style="margin-top:15px;"
+    >
+
+    <div id="inventoryList"></div>
 
 </div>
 
@@ -1144,34 +1229,7 @@ function loadCalendar() {
 
         const key = `${year}-${month}-${day}`;
 
-        // const savedNote =
-        // localStorage.getItem(key);
-
-        // if(savedNote) {
-        //     div.classList.add("has-note");
-        // }
-
-        // div.addEventListener("click", () => {
-
-        //     const existing =
-        //     localStorage.getItem(key) || "";
-
-        //     const note =
-        //     prompt(`Notes for ${day}/${month+1}/${year}`, existing);
-
-        //     if(note !== null) {
-
-        //         if(note.trim() === "") {
-        //             localStorage.removeItem(key);
-        //         }
-        //         else {
-        //             localStorage.setItem(key, note);
-        //         }
-
-        //         loadCalendar();
-        //     }
-        // });
-
+        
         const saved =
         JSON.parse(localStorage.getItem(key)) || {};
 
@@ -1273,6 +1331,166 @@ document.getElementById("nextMonth")
 });
 
 loadCalendar();
+
+
+// ================= INVENTORY MANAGER =================
+
+function loadInventory() {
+
+    return JSON.parse(
+        localStorage.getItem("inventoryItems")
+    ) || [];
+}
+
+function saveInventory(data) {
+
+    localStorage.setItem(
+        "inventoryItems",
+        JSON.stringify(data)
+    );
+}
+
+function renderInventory(search = "") {
+
+    const items = loadInventory();
+
+    const list =
+    document.getElementById("inventoryList");
+
+    list.innerHTML = "";
+
+    items.forEach((item, index) => {
+
+        if(
+            !item.name.toLowerCase()
+            .includes(search.toLowerCase())
+        ) return;
+
+        let colorClass = "";
+
+        if(item.status === "available") {
+            colorClass = "invGreen";
+        }
+
+        if(item.status === "low") {
+            colorClass = "invYellow";
+        }
+
+        if(item.status === "out") {
+            colorClass = "invRed";
+        }
+
+        list.innerHTML += `
+
+            <div class="inventoryCard ${colorClass}">
+
+                <div class="inventoryTitle">
+                    ${item.name}
+                </div>
+
+                <br>
+
+                📦 Rack:
+                ${item.rack}
+                <br>
+
+                📂 Category:
+                ${item.category}
+                <br>
+
+                🔢 Quantity:
+                ${item.qty}
+                <br>
+
+                📝 Notes:
+                ${item.notes || "-"}
+                <br><br>
+
+                <button
+                    onclick="deleteInventory(${index})"
+                >
+                    Delete
+                </button>
+
+            </div>
+        `;
+    });
+}
+
+function deleteInventory(index) {
+
+    let items = loadInventory();
+
+    items.splice(index, 1);
+
+    saveInventory(items);
+
+    renderInventory();
+}
+
+document.getElementById("addInventoryBtn")
+.addEventListener("click", () => {
+
+    const rack =
+    document.getElementById("rackName")
+    .value.trim();
+
+    const name =
+    document.getElementById("itemName")
+    .value.trim();
+
+    const category =
+    document.getElementById("itemCategory")
+    .value;
+
+    const qty =
+    document.getElementById("itemQty")
+    .value;
+
+    const status =
+    document.getElementById("itemStatus")
+    .value;
+
+    const notes =
+    document.getElementById("itemNotes")
+    .value.trim();
+
+    if(!rack || !name || !qty) {
+
+        alert("Enter all details");
+
+        return;
+    }
+
+    let items = loadInventory();
+
+    items.push({
+
+        rack,
+        name,
+        category,
+        qty,
+        status,
+        notes
+    });
+
+    saveInventory(items);
+
+    renderInventory();
+
+    document.getElementById("rackName").value = "";
+    document.getElementById("itemName").value = "";
+    document.getElementById("itemQty").value = "";
+    document.getElementById("itemNotes").value = "";
+});
+
+document.getElementById("searchInventory")
+.addEventListener("input", (e) => {
+
+    renderInventory(e.target.value);
+});
+
+renderInventory();
 
 
 
