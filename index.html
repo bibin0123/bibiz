@@ -461,6 +461,20 @@
 
 </div>
 
+<!-- ================= LIVE FOOTBALL SCORE ================= -->
+
+<div class="section">
+
+    <h3>⚽ Live Football Score</h3>
+
+    <button id="refreshFootball">
+        Refresh Scores
+    </button>
+
+    <div id="footballOutput" style="margin-top:10px;"></div>
+
+</div>
+
     <!-- <textarea id="input" placeholder="Enter text..."></textarea>
 <textarea id="reverse" placeholder="Reverse parsed text..."></textarea> -->
 
@@ -1491,6 +1505,112 @@ document.getElementById("searchInventory")
 });
 
 renderInventory();
+
+
+// ================= LIVE FOOTBALL SCORE =================
+
+async function loadFootballScore() {
+
+    const out =
+    document.getElementById("footballOutput");
+
+    out.innerHTML = "Loading live matches...";
+
+    try {
+
+        const res = await fetch(
+            "https://site.api.espn.com/apis/site/v2/sports/soccer/scoreboard"
+        );
+
+        const data = await res.json();
+
+        // ONLY LIVE MATCHES
+        const liveMatches =
+        data.events.filter(event =>
+            event.status.type.state === "in"
+        );
+
+        // NO LIVE MATCH
+        if (liveMatches.length === 0) {
+
+            out.innerHTML =
+            "⚽ No live football matches now.";
+
+            return;
+        }
+
+        let html = "";
+
+        liveMatches.forEach(event => {
+
+            let match =
+            event.competitions[0];
+
+            let t1 =
+            match.competitors[0];
+
+            let t2 =
+            match.competitors[1];
+
+            html += `
+
+                <div class="taskItem">
+
+                    <span>
+
+                        <b>
+                            ${t1.team.displayName}
+                            vs
+                            ${t2.team.displayName}
+                        </b>
+
+                        <br><br>
+
+                        ⚽ ${t1.team.abbreviation} :
+                        ${t1.score}
+
+                        <br>
+
+                        ⚽ ${t2.team.abbreviation} :
+                        ${t2.score}
+
+                        <br><br>
+
+                        <b>Status:</b>
+
+                        ${match.status.type.detail}
+
+                    </span>
+
+                </div>
+
+                <br>
+            `;
+        });
+
+        out.innerHTML = html;
+
+    }
+
+    catch (err) {
+
+        out.innerHTML =
+        "❌ Unable to load football scores.";
+
+        console.error(err);
+    }
+}
+
+// BUTTON REFRESH
+document.getElementById("refreshFootball")
+.addEventListener(
+    "click",
+    loadFootballScore
+);
+
+// AUTO LOAD
+loadFootballScore();
+
 
 
 
